@@ -1,0 +1,30 @@
+all: main
+
+main: main.o schema.o relation.o file_ops.o database.o type_ops.o
+	gcc main.o relation.o schema.o file_ops.o type_ops.o database.o -o main
+
+main.o:
+	gcc -c src/main.c
+
+relation.o:
+	gcc -c src/relation.c
+
+schema.o:
+	gcc -c src/schema.c
+
+file_ops.o: type_ops.o
+	gcc -c src/file_ops.c
+
+database.o:
+	gcc -c src/database.c
+
+type_ops.o:
+	gcc -c src/type_ops.c
+
+exec:
+	./main
+
+clean:
+	rm -f *.o; \
+	rm main
+	
