@@ -702,7 +702,11 @@ char * query_join(FILE *file, struct relation *left, struct relation *right, str
     free(row_header);
     free(page_header);
     printf("Joined %d rows\n", result_count);
-    safe_string_concatenation(&buf, result_count);
+    char buffer[128];
+    sprintf(buffer, "Joined %d rows\n", result_count);
+    if (buf) {
+        safe_string_concatenation(&buf, buffer);
+    }
     return buf;
 }
 
