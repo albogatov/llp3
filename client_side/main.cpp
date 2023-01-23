@@ -21,7 +21,7 @@ int main() {
 
     sockaddr_in addr{};
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(8187);
+    addr.sin_port = htons(9030);
     addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
     if (connect(sock, reinterpret_cast<sockaddr*>(&addr), sizeof (addr)) < 0) {

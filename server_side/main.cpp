@@ -69,9 +69,9 @@ awaitable<void> accept_new_client(tcp::socket socket, database* db) {
 awaitable<void> listener(database* db) {
 
     auto executor = co_await this_coro::executor;
-    tcp::acceptor acceptor(executor, {tcp::v4(), 8187});
+    tcp::acceptor acceptor(executor, {tcp::v4(), 9030});
 
-    std::cout << "listener" << std::endl;
+    std::cout << "Waiting for requests" << std::endl;
 
     for (;;) {
 
