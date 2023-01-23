@@ -254,7 +254,7 @@ std::string XmlCmpNode(ast_node* node, int indentation) {
     for (int i = 0; i < indentation; ++i) {
         res += tab;
     }
-    res += "<compare><left_operand type=" + XmlToString(node->first, indentation + 1) + "</left_operand>\n";
+    res += "<filter><left_operand type=" + XmlToString(node->first, indentation + 1) + "</left_operand>\n";
     for (int i = 0; i < indentation + 1; ++i) {
         res += tab;
     }
@@ -266,7 +266,7 @@ std::string XmlCmpNode(ast_node* node, int indentation) {
     for (int i = 0; i < indentation; ++i) {
         res += tab;
     }
-    return res + "</compare>";
+    return res + "</filter>";
 }
 
 std::string XmlToString(ast_node* node, int indentation) {

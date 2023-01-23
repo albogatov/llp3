@@ -222,17 +222,19 @@ struct query_join* query_join_make(struct relation* left, struct relation* right
     return new;
 }
 
-void query_execute(struct query *query, bool show_output) {
+char * query_execute(struct query *query, bool show_output, char *buf) {
 
     switch (query->operation) {
         case SELECT:
-            row_select(query, show_output);
+            return row_select(query, show_output, buf);
             break;
         case DELETE:
             row_delete(query, show_output);
+            return NULL;
             break;
         case UPDATE:
             row_update(query, show_output);
+            return NULL;
             break;
     }
 

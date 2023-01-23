@@ -61,48 +61,73 @@ void varchar_update(char* row_ptr, void* value, uint32_t offset, uint16_t column
     strcpy(original, expecting);
 }
 
-void integer_output(char* begin, uint32_t offset) {
+char * integer_output(char *begin, uint32_t offset, char *buf) {
     int32_t* value = (int32_t*) (begin + offset);
     printf("%" PRId32 " ", *value);
+    char buffer[128];
+    sprintf(buffer, "%d", *value);
+    if (buf) {
+        safe_string_concatenation(&buf, buffer);
+    }
+    return buf;
 }
 
-void boolean_output(char* begin, uint32_t offset) {
+char * boolean_output(char *begin, uint32_t offset, char *buf) {
     bool* value = (bool*) (begin + offset);
     printf("%s ", *value ? "T" : "F");
+    char buffer[128];
+    sprintf(buffer, "%s ", *value ? "T" : "F");
+    if (buf) {
+        safe_string_concatenation(&buf, buffer);
+    }
+    return buf;
 }
 
-void double_output(char* begin, uint32_t offset) {
+char * double_output(char *begin, uint32_t offset, char *buf) {
     double* value = (double*) (begin + offset);
     printf("%f ", *value);
+    char buffer[128];
+    sprintf(buffer, "%f ", *value);
+    if (buf) {
+        safe_string_concatenation(&buf, buffer);
+    }
+    return buf;
 }
 
-void varchar_output(char* begin, uint32_t offset) {
+char * varchar_output(char *begin, uint32_t offset, char *buf) {
     char* value = (char*) (begin + offset);
     printf("%s ", value);
+    char buffer[128];
+    sprintf(buffer, "%s ", value);
+    if (buf) {
+        safe_string_concatenation(&buf, buffer);
+    }
+    return buf;
 }
 
-void data_output(char* begin, struct column* columns, uint16_t length) {
+char * data_output(char *begin, struct column *columns, uint16_t length, char *buf) {
     uint16_t cursor = 0;
 
     for (size_t i = 0; i < length; i++) {
         switch (columns[i].content_type) {
             case INTEGER:
-                integer_output(begin, cursor);
+                buf = integer_output(begin, cursor, buf);
                 break;
             case BOOLEAN:
-                boolean_output(begin, cursor);
+                buf = boolean_output(begin, cursor, buf);
                 break;
             case VARCHAR:
-                varchar_output(begin, cursor);
+                buf = varchar_output(begin, cursor, buf);
                 break;
             case DOUBLE:
-                double_output(begin, cursor);
+                buf = double_output(begin, cursor, buf);
                 break;
         }
         cursor += columns[i].size;
     }
-
+    safe_string_concatenation(&buf, "\n");
     printf("\n");
+    return buf;
 }
 
 bool integer_query_join_compare(char* left_row, char* right_row, struct query_params* left_query, struct query_params* right_query, struct relation* left, struct relation* right) {
@@ -140,4 +165,21 @@ bool varchar_query_join_compare(char* left_row, char* right_row, struct query_pa
         query_join_output(left_row, right_row, left, right, left_query->offset, right_query->offset);
         return true;
     } else return false;
+}
+
+char* safe_string_copy (const char* from) {
+    int count = strlen(from);
+    char* ret = malloc(sizeof(char) * (count + 1));
+    strcpy(ret, from);
+    return ret;
+}
+
+void safe_string_concatenation (char** str, const char * str2) {
+    char* str1 = *str;
+    int first_len = strlen(str1), second_len = strlen(str2);
+    char * new_str = malloc(sizeof(char) * (first_len + second_len + 1));
+    strcat(new_str, str1);
+    strcat(new_str, str2);
+    //free(str1);
+    *str = new_str;
 }

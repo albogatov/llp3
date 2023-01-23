@@ -36,13 +36,13 @@ namespace receiver {
 //        }
 
         content_type type_from_str(std::string &str) {
-            if (str == "BOOl" || str == "bool") {
+            if (str == "BOOLEAN" || str == "bool") {
                 return BOOLEAN;
-            } else if (str == "FLOAT" || str == "float_number") {
+            } else if (str == "FLOAT_NUMBER" || str == "float_number") {
                 return DOUBLE;
-            } else if (str == "STR" || str == "string") {
+            } else if (str == "STRING" || str == "string") {
                 return VARCHAR;
-            } else if (str == "INT" || str == "number") {
+            } else if (str == "NUMBER" || str == "number") {
                 return INTEGER;
             }
         }
@@ -58,7 +58,7 @@ namespace receiver {
             auto name = pt.get<std::string>("table");
             auto list = pt.get_child("cmp");
 
-            list = list.get_child("compare");
+            list = list.get_child("filter");
 
             auto column = list.get<std::string>("left_operand");
             int column_len = column.length();
@@ -97,15 +97,14 @@ namespace receiver {
 //            }
 
             if (select) {
-                std::string res;
+                char* res1;
                 relation* relation = relation_get(name.c_str(), db);
                 query* select_query = query_make(SELECT, relation, static_cast<char**>(&column_ar), &value_v, -1);
-                query_execute(select_query, true);
-                //auto selected = db.select({name, column, compare_from_str(cmp), value, as_type });
-//                for (const auto &item: selected.rows) {
-//                    res += item + "\n";
-//                }
-                return !res.empty() ? res : "empty";
+                res1 = query_execute(select_query, true, res1);
+                if (res1) {
+                    std::string res(res1);
+                    return !res.empty() ? res : "empty";
+                } else return "Something went very wrong";
             } else {
 //                if (db._delete({name, column, compare_from_str(cmp), value, as_type })) {
 //                    return "deleted";

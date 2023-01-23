@@ -100,7 +100,7 @@ struct row* row_create(struct relation* relation);
 
 void row_close(struct row* row);
 void row_insert(struct row* row);
-void row_select(struct query *query, bool show_output);
+char * row_select(struct query *query, bool show_output, char *buf);
 void row_update(struct query *query, bool show_output);
 void row_delete(struct query *query, bool show_output);
 

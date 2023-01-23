@@ -319,11 +319,11 @@ void update_query(char *begin, void *value, struct query_params *query, struct r
     fwrite(begin, relation->schema->length, 1, relation->relation_header->database->source_file);
 
     if (show_output)
-        data_output(begin, relation->schema->start, relation->schema->count);
+        data_output(begin, relation->schema->start, relation->schema->count, NULL);
 }
 
-void select_execute(FILE *file, struct relation *relation, uint32_t offset, uint16_t column_size, void *value,
-                    enum content_type type, int32_t row_count, bool show_output) {
+char * select_execute(FILE *file, struct relation *relation, uint32_t offset, uint16_t column_size, void *value,
+                      enum content_type type, int32_t row_count, bool show_output, char *buf) {
     uint32_t result_count = 0;
     uint32_t ptr = sizeof(struct page_header) + sizeof(uint16_t) + sizeof(struct column) * relation->schema->count;
 
@@ -348,28 +348,28 @@ void select_execute(FILE *file, struct relation *relation, uint32_t offset, uint
                 case INTEGER:
                     if (integer_compare(row_ptr, value, offset)) {
                         if (show_output)
-                            data_output(row_ptr, relation->schema->start, relation->schema->count);
+                            buf = data_output(row_ptr, relation->schema->start, relation->schema->count, buf);
                         result_count++;
                     }
                     break;
                 case BOOLEAN:
                     if (boolean_compare(row_ptr, value, offset)) {
                         if (show_output)
-                            data_output(row_ptr, relation->schema->start, relation->schema->count);
+                            buf = data_output(row_ptr, relation->schema->start, relation->schema->count, buf);
                         result_count++;
                     }
                     break;
                 case DOUBLE:
                     if (double_compare(row_ptr, value, offset)) {
                         if (show_output)
-                            data_output(row_ptr, relation->schema->start, relation->schema->count);
+                            buf = data_output(row_ptr, relation->schema->start, relation->schema->count, buf);
                         result_count++;
                     }
                     break;
                 case VARCHAR:
                     if (varchar_compare(row_ptr, value, offset, column_size)) {
                         if (show_output)
-                            data_output(row_ptr, relation->schema->start, relation->schema->count);
+                            buf = data_output(row_ptr, relation->schema->start, relation->schema->count, buf);
                         result_count++;
                     }
                     break;
@@ -391,7 +391,12 @@ void select_execute(FILE *file, struct relation *relation, uint32_t offset, uint
     free(page_header);
 
     printf("Selected %d rows\n", result_count);
-
+    char buffer[128];
+    sprintf(buffer, "Selected %d rows\n", result_count);
+    if (buf) {
+        safe_string_concatenation(&buf, buffer);
+    }
+    return buf;
 }
 
 void update_execute(FILE *file, struct relation *relation, struct query_params *first, struct query_params *second,
@@ -543,16 +548,16 @@ void query_join_output(char* begin_left, char* begin_right, struct relation* lef
         if (offset_one != left_offset) {
             switch (left->schema->start[i].content_type) {
                 case INTEGER:
-                    integer_output(begin_left, offset_one);
+                    integer_output(begin_left, offset_one, NULL);
                     break;
                 case BOOLEAN:
-                    boolean_output(begin_left, offset_one);
+                    boolean_output(begin_left, offset_one, NULL);
                     break;
                 case DOUBLE:
-                    double_output(begin_left, offset_one);
+                    double_output(begin_left, offset_one, NULL);
                     break;
                 case VARCHAR:
-                    varchar_output(begin_left, offset_one);
+                    varchar_output(begin_left, offset_one, NULL);
                     break;
             }
         } else {
@@ -560,16 +565,16 @@ void query_join_output(char* begin_left, char* begin_right, struct relation* lef
                 if (offset_two != right_offset) {
                     switch (right->schema->start[j].content_type) {
                         case INTEGER:
-                            integer_output(begin_right, offset_two);
+                            integer_output(begin_right, offset_two, NULL);
                             break;
                         case BOOLEAN:
-                            boolean_output(begin_right, offset_two);
+                            boolean_output(begin_right, offset_two, NULL);
                             break;
                         case DOUBLE:
-                            double_output(begin_right, offset_two);
+                            double_output(begin_right, offset_two, NULL);
                             break;
                         case VARCHAR:
-                            varchar_output(begin_right, offset_two);
+                            varchar_output(begin_right, offset_two, NULL);
                             break;
                     }
                 }

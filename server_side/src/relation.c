@@ -65,7 +65,7 @@ void row_insert(struct row* row) {
     }
 }
 
-void row_select(struct query *query, bool show_output) {
+char * row_select(struct query *query, bool show_output, char *buf) {
     bool is_column_present = false;
     enum content_type content_type;
     char name[MAX_NAME_LENGTH];
@@ -83,9 +83,10 @@ void row_select(struct query *query, bool show_output) {
     if (is_column_present) {
         uint32_t offset = column_get_offset(query->relation->schema->start,
                                             query->name[0], query->relation->schema->count);
-        select_execute(query->relation->relation_header->database->source_file, query->relation, offset, size,
-                       query->value[0], content_type, query->number, show_output);
+        buf = select_execute(query->relation->relation_header->database->source_file, query->relation, offset, size,
+                       query->value[0], content_type, query->number, show_output, buf);
     } else printf("Attribute for this query does not exist\n");
+    return buf;
 }
 
 void row_update(struct query *query, bool show_output) {
