@@ -4,7 +4,9 @@
 #include <stdbool.h>
 #include <inttypes.h>
 #include "database.h"
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 void integer_update(char* row_ptr, void* value, uint32_t offset);
 void boolean_update(char* row_ptr, void* value, uint32_t offset);
 void varchar_update(char* row_ptr, void* value, uint32_t offset, uint16_t column_size);
@@ -25,5 +27,7 @@ bool integer_query_join_compare(char* left_row, char* right_row, struct query_pa
 bool boolean_query_join_compare(char* left_row, char* right_row, struct query_params* left_query, struct query_params* right_query, struct relation* left, struct relation* right);
 bool varchar_query_join_compare(char* left_row, char* right_row, struct query_params* left_query, struct query_params* right_query, struct relation* left, struct relation* right);
 bool double_query_join_compare(char* left_row, char* right_row, struct query_params* left_query, struct query_params* right_query, struct relation* left, struct relation* right);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

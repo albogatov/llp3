@@ -69,11 +69,11 @@ std::string XmlPairNode(ast_node* node, int indentation) {
     for (int i = 0; i < indentation + 1; ++i) {
         res += tab;
     }
-    res = res + "<value type=" + node->fields_one.string + "</value>\n";
+    res = res + "<value type=\"column_name\">" + node->fields_one.string + "</value>\n";
     for (int i = 0; i < indentation + 1; ++i) {
         res += tab;
     }
-    res += "<value type=" + XmlToString(node->second, indentation + 1); + "</value>\n";
+    res += "<value type=" + XmlToString(node->second, indentation + 1) + "</value>\n";
     for (int i = 0; i < indentation; ++i) {
         res += tab;
     }

@@ -19,7 +19,7 @@
 
     <xs:complexType name="cmp_t">
         <xs:choice>
-            <xs:element name="compare" type="compare_t"/>
+            <xs:element name="filter" type="compare_t"/>
             <xs:element name="nullable" type="xs:string"/>
         </xs:choice>
     </xs:complexType>

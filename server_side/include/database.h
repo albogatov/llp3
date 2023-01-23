@@ -48,6 +48,9 @@ struct database {
     struct database_header* database_header;
     FILE* source_file;
 };
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 bool is_enough_space(struct page_header* page_header, uint32_t required);
 
@@ -55,15 +58,11 @@ struct page_header* page_create(struct database_header* database_header, struct 
 struct page_header* page_add_real(struct database_header* database_header);
 struct page_header* page_add(struct relation_header* relation_header, struct database_header* database_header);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 
 struct database* database_get(const char *const file, const enum database_state state);
 
-#ifdef __cplusplus
-}
-#endif
+
 
 struct database* database_create_in_file(const char *const file);
 struct database* database_get_from_file(const char *const file);
@@ -83,5 +82,7 @@ void query_join_execute(struct query_join* query);
 
 void query_close(struct query* query);
 void query_join_close(struct query_join* query);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

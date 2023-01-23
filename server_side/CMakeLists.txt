@@ -25,7 +25,7 @@ find_package(Boost  1.81.0)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g")
 include_directories(${Boost_INCLUDE_DIRS})
 #set_property(TARGET ${XercesC_LIBRARIES} PROPERTY CXX_STANDARD 17)
-add_executable(server src/database.c src/file_ops.c src/relation.c src/schema.c src/type_ops.c src/receiver.cpp include/server_ops.h main.cpp)
+add_executable(server src/database.c src/file_ops.c src/relation.c src/schema.c src/type_ops.c include/server_ops.h main.cpp)
 
 target_link_libraries( server ${Boost_LIBRARIES} )
 target_link_libraries( server ${LIBXML2_LIBRARIES} )

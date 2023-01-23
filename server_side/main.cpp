@@ -54,40 +54,12 @@ awaitable<void> request(tcp::socket& socket, database* db) {
 
     xmlTextReaderPtr reader = NULL;
     xmlDocPtr xml = xmlParseDoc((xmlChar*) str.c_str());
-//    const char* filename = "/Users/abogatov/CLionProjects/llp3_xml/server_side/ex.xml";
-    xmlSchemaValidateDoc(valid_ctxt, xml);
-    xmlSchemaSetValidStructuredErrors(valid_ctxt, schemaParseErrorHandler, &has_schema_errors);
+    if ( xmlSchemaValidateDoc(valid_ctxt, xml) == 0 ) {
+        std::cout << str << std::endl;
+    }
 
-//    if (reader != NULL)
-//    {
-//        if (valid_ctxt)
-//        {
-//            xmlTextReaderSchemaValidateCtxt(reader, valid_ctxt, 0);
-//            xmlSchemaSetValidStructuredErrors(valid_ctxt, schemaParseErrorHandler, &has_schema_errors);
-//        }
-//        ret = xmlTextReaderRead(reader);
-//        while (ret == 1 && !has_schema_errors)
-//        {
-//            ret = xmlTextReaderRead(reader);
-//        }
-//    }
-//
-//    if (ret != 0)
-//    {
-//        xmlErrorPtr err = xmlGetLastError();
-//        fprintf(stdout, "%s: failed to parse in line %d, col %d. Error %d: %s\n",
-//                err->file,
-//                err->line,
-//                err->int2,
-//                err->code,
-//                err->message);
-//    }
-//    xmlFreeTextReader(reader);
-
-    std::cout << str << std::endl;
-
-//    auto res = receiver::evaluate(str, db);
-//    co_await async_write(socket, boost::asio::buffer(res.c_str(), res.size()), use_awaitable);
+    auto res = receiver::evaluate(str, db);
+   co_await async_write(socket, boost::asio::buffer(res.c_str(), res.size()), use_awaitable);
 
 }
 

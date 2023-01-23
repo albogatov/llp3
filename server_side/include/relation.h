@@ -72,7 +72,9 @@ struct row {
     struct relation* relation;
     void** data;
 };
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 struct column* column_delete(struct column* current, const char* name, struct schema* schema);
 struct column* column_create(const char* name, enum content_type content_type);
 struct column* column_create_varchar(const char* name, enum content_type content_type, uint16_t size);
@@ -106,5 +108,7 @@ void integer_add(struct row* row, int32_t value, uint32_t offset);
 void boolean_add(struct row* row, bool value, uint32_t offset);
 void varchar_add(struct row* row, char* value, uint32_t offset, uint32_t length);
 void double_add(struct row* row, double value, uint32_t offset);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

@@ -21,7 +21,9 @@ enum file_op_status  {
   OK = 0,
   ERROR
 };
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 bool is_relation_present(FILE *file, const size_t length, const char* name, struct relation_header* relation_header);
 
 enum file_op_status file_update_last_page(FILE *file, uint32_t old_number, uint32_t new_);
@@ -61,5 +63,7 @@ void query_join(FILE *file, struct relation* left, struct relation* right, struc
 void query_join_output(char* begin_left, char* begin_right, struct relation* left, struct relation* right, uint32_t left_offset, uint32_t right_offset);
 
 long int database_get_size(FILE* file);
-
+#ifdef __cplusplus
+}
+#endif
 #endif
