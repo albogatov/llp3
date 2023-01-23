@@ -1,7 +1,6 @@
 #ifndef LLP3_XML_RECEIVER_H
 #define LLP3_XML_RECEIVER_H
 
-
 #pragma once
 
 #include <iostream>
@@ -52,11 +51,11 @@ namespace receiver {
 
     namespace {
 
-        std::string base_select_or_delete_evaluate(const boost::property_tree::ptree &pt, database* db,
-                                                   bool select) {
+        std::string select_op(const boost::property_tree::ptree &pt, database* db) {
 
             auto name = pt.get<std::string>("table");
             auto list = pt.get_child("cmp");
+
 
             list = list.get_child("filter");
 
@@ -68,6 +67,7 @@ namespace receiver {
             auto cmp = list.get<std::string>("compare_by");
             auto value = list.get<std::string>("right_operand");
             void* value_v = &value;
+            std::string value_c = value;
 
             content_type as_type = VARCHAR;
             auto this_type = list.get<std::string>("right_operand.<xmlattr>.type");
@@ -81,22 +81,22 @@ namespace receiver {
                 as_type = DOUBLE;
             }
 
-//            if (select && pt.get_child("join").get<std::string>("nullable", "") != "nullptr") {
-//                auto second_name = pt.get<std::string>("join.select.table");
-//                std::string res;
-//                std::cout << name << " " << second_name << " " << column << " " << value << std::endl;
-//                relation* relation = relation_get(name.c_str(), db);
-//                row* row_one = row_create(relation);
-//                query* select_query = query_make(SELECT, relation, static_cast<char**>(&column_ar), &value_v, -1);
-//                query_execute(select_query, true);
-//                //auto selected = db.join_select({name, second_name, column_ar, value });
-////                for (const auto &item: selected.rows) {
-////                    res += item + "\n";
-////                }
-//                return res;
-//            }
+            if (select && pt.get_child("join").get<std::string>("nullable", "") != "nullptr") {
 
-            if (select) {
+                auto second_name = pt.get<std::string>("join");
+                std::string res;
+                relation* relation = relation_get(name.c_str(), db);
+                struct relation* relation_join = relation_get(second_name.c_str(), db);
+                struct query_join* select_query_7 = query_join_make(relation, relation_join, column_ar,
+                                                                    value_c.data());
+                char* res1 = res.data();
+                res1 = query_join_execute(select_query_7, res1);
+                if (res1) {
+                    std::string res(res1);
+                    return !res.empty() ? res : "empty";
+                } else return "Something went very wrong";
+            }
+
                 char* res1;
                 relation* relation = relation_get(name.c_str(), db);
                 query* select_query = query_make(SELECT, relation, static_cast<char**>(&column_ar), &value_v, -1);
@@ -105,16 +105,10 @@ namespace receiver {
                     std::string res(res1);
                     return !res.empty() ? res : "empty";
                 } else return "Something went very wrong";
-            } else {
-//                if (db._delete({name, column, compare_from_str(cmp), value, as_type })) {
-//                    return "deleted";
-//                } else {
-//                    return "error in delete: wrong query";
-//                }
-            }
+            
         }
 
-        std::string insert_evaluate(const boost::property_tree::ptree &pt, database* db) {
+        std::string insert_op(const boost::property_tree::ptree &pt, database* db) {
 
             auto name = pt.get<std::string>("name");
             auto list = pt.get_child("list");
@@ -169,19 +163,19 @@ namespace receiver {
             return "inserted into " + name;
         }
 
-        std::string select_evaluate(const boost::property_tree::ptree &pt, database* db) {
-            return base_select_or_delete_evaluate(pt, db, true);
+//        std::string select_op(const boost::property_tree::ptree &pt, database* db) {
+//            return select_op(pt, db);
+//        }
+
+        std::string update_op(const boost::property_tree::ptree &pt, database* db) {
+
         }
 
-        std::string update_evaluate(const boost::property_tree::ptree &pt, database* db) {
-
+        std::string delete_op(const boost::property_tree::ptree &pt, database* db) {
+          
         }
 
-        std::string delete_evaluate(const boost::property_tree::ptree &pt, database* db) {
-            return base_select_or_delete_evaluate(pt, db, false);
-        }
-
-        std::string create_evaluate(const boost::property_tree::ptree &pt, database* db) {
+        std::string create_op(const boost::property_tree::ptree &pt, database* db) {
             auto name = pt.get<std::string>("name");
             auto list = pt.get_child("list_values").get_child("list");
 
@@ -229,7 +223,7 @@ namespace receiver {
 
 //    }
 
-    std::string evaluate(std::string& input, database* db) {
+    std::string request_op(std::string& input, database* db) {
 
         std::istringstream iss (input);
 
@@ -246,19 +240,19 @@ namespace receiver {
 
             if (command == "create") {
                 std::cout << "create query" << std::endl;
-                return create_evaluate(children, db);
+                return create_op(children, db);
             } else if (command == "select") {
                 std::cout << "select query" << std::endl;
-                return select_evaluate(children, db);
+                return select_op(children, db);
             } else if (command == "insert") {
                 std::cout << "insert query" << std::endl;
-                return insert_evaluate(children, db);
+                return insert_op(children, db);
             } else if (command == "update") {
                 std::cout << "update query" << std::endl;
-                return update_evaluate(children, db);
+                return update_op(children, db);
             } else if (command == "delete") {
                 std::cout << "delete query" << std::endl;
-                return delete_evaluate(children, db);
+                return delete_op(children, db);
             } else {
                 return "unsupported operation";
             }

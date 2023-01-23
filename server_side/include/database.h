@@ -78,7 +78,7 @@ struct query* query_make(enum query_op operation, struct relation* relations, ch
 struct query_join* query_join_make(struct relation* left, struct relation* right, char* left_column, char* right_column);
 
 char * query_execute(struct query *query, bool show_output, char *buf);
-void query_join_execute(struct query_join* query);
+char * query_join_execute(struct query_join *query, char *buf);
 
 void query_close(struct query* query);
 void query_join_close(struct query_join* query);

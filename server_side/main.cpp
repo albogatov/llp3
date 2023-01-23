@@ -49,7 +49,7 @@ awaitable<void> request(tcp::socket& socket, database* db) {
         std::cout << str << std::endl;
     }
 
-    auto res = receiver::evaluate(str, db);
+    auto res = receiver::request_op(str, db);
     co_await async_write(socket, boost::asio::buffer(res.c_str(), res.size()), use_awaitable);
 
 }

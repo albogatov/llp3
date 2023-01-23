@@ -130,41 +130,49 @@ char * data_output(char *begin, struct column *columns, uint16_t length, char *b
     return buf;
 }
 
-bool integer_query_join_compare(char* left_row, char* right_row, struct query_params* left_query, struct query_params* right_query, struct relation* left, struct relation* right) {
+char * integer_query_join_compare(char *left_row, char *right_row, struct query_params *left_query,
+                                  struct query_params *right_query, struct relation *left, struct relation *right,
+                                  char *buf) {
     int32_t value_one = (int32_t) *(left_row + left_query->offset);
     int32_t value_two = (int32_t) *(right_row + right_query->offset);
     if (value_one == value_two) {
-        query_join_output(left_row, right_row, left, right, left_query->offset, right_query->offset);
-        return true;
-    } else return false;
+        buf = query_join_output(left_row, right_row, left, right, left_query->offset, right_query->offset, buf);
+        return buf;
+    } else return buf;
 }
 
-bool boolean_query_join_compare(char* left_row, char* right_row, struct query_params* left_query, struct query_params* right_query, struct relation* left, struct relation* right) {
+char * boolean_query_join_compare(char *left_row, char *right_row, struct query_params *left_query,
+                                  struct query_params *right_query, struct relation *left, struct relation *right,
+                                  char *buf) {
     bool value_one = (bool) *(left_row + left_query->offset);
     bool value_two = (bool) *(right_row + right_query->offset);
     if (value_one == value_two) {
-        query_join_output(left_row, right_row, left, right, left_query->offset, right_query->offset);
-        return true;
-    } else return false;
+        buf = query_join_output(left_row, right_row, left, right, left_query->offset, right_query->offset, buf);
+        return buf;
+    } else return buf;
 }
 
-bool double_query_join_compare(char* left_row, char* right_row, struct query_params* left_query, struct query_params* right_query, struct relation* left, struct relation* right) {
+char * double_query_join_compare(char *left_row, char *right_row, struct query_params *left_query,
+                                 struct query_params *right_query, struct relation *left, struct relation *right,
+                                 char *buf) {
     double value_one = (double) *(left_row + left_query->offset);
     double value_two = (double) *(right_row + right_query->offset);
     if (value_one == value_two) {
-        query_join_output(left_row, right_row, left, right, left_query->offset, right_query->offset);
-        return true;
-    } else return false;
+        buf = query_join_output(left_row, right_row, left, right, left_query->offset, right_query->offset, buf);
+        return buf;
+    } else return buf;
 }
 
 
-bool varchar_query_join_compare(char* left_row, char* right_row, struct query_params* left_query, struct query_params* right_query, struct relation* left, struct relation* right) {
+char * varchar_query_join_compare(char *left_row, char *right_row, struct query_params *left_query,
+                                  struct query_params *right_query, struct relation *left, struct relation *right,
+                                  char *buf) {
     char* value_one = (char*) (left_row + left_query->offset);
     char* value_two = (char*) (right_row + right_query->offset);
     if (strcmp(value_one, value_two) == 0) {
-        query_join_output(left_row, right_row, left, right, left_query->offset, right_query->offset);
-        return true;
-    } else return false;
+        buf = query_join_output(left_row, right_row, left, right, left_query->offset, right_query->offset, buf);
+        return buf;
+    } else return buf;
 }
 
 char* safe_string_copy (const char* from) {
@@ -179,7 +187,7 @@ void safe_string_concatenation (char** str, const char * str2) {
     int first_len = strlen(str1), second_len = strlen(str2);
     char * new_str = malloc(sizeof(char) * (first_len + second_len + 1));
     strcat(new_str, str1);
+    strcat(new_str, " ");
     strcat(new_str, str2);
-    //free(str1);
     *str = new_str;
 }

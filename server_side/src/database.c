@@ -240,7 +240,7 @@ char * query_execute(struct query *query, bool show_output, char *buf) {
 
 }
 
-void query_join_execute(struct query_join* query) {
+char * query_join_execute(struct query_join *query, char *buf) {
     bool is_column_present_one = false;
     bool is_column_present_two = false;
     char name_one[MAX_NAME_LENGTH];
@@ -296,14 +296,15 @@ void query_join_execute(struct query_join* query) {
             strncpy(query_two->name, "", MAX_NAME_LENGTH);
             strncpy(query_two->name, name_two, MAX_NAME_LENGTH);
 
-            query_join(query->left->relation_header->database->source_file, query->left, query->right, query_one, query_two);
+            buf = query_join(query->left->relation_header->database->source_file, query->left, query->right, query_one,
+                       query_two, buf);
         }
 
         free(query_one);
         free(query_two);
 
     } else printf("Couldn't complete query, attributes not present\n");
-
+    return buf;
 }
 
 void query_close(struct query* query) {

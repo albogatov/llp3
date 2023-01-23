@@ -541,23 +541,24 @@ void delete_execute(FILE *file, struct relation* relation, struct query_params* 
 }
 
 
-void query_join_output(char* begin_left, char* begin_right, struct relation* left, struct relation* right, uint32_t left_offset, uint32_t right_offset) {
+char * query_join_output(char *begin_left, char *begin_right, struct relation *left, struct relation *right,
+                         uint32_t left_offset, uint32_t right_offset, char *buf) {
     uint16_t offset_one = 0;
     uint16_t offset_two = 0;
     for (size_t i = 0; i < left->schema->count; i++) {
         if (offset_one != left_offset) {
             switch (left->schema->start[i].content_type) {
                 case INTEGER:
-                    integer_output(begin_left, offset_one, NULL);
+                    buf = integer_output(begin_left, offset_one, buf);
                     break;
                 case BOOLEAN:
-                    boolean_output(begin_left, offset_one, NULL);
+                    buf = boolean_output(begin_left, offset_one, buf);
                     break;
                 case DOUBLE:
-                    double_output(begin_left, offset_one, NULL);
+                    buf = double_output(begin_left, offset_one, buf);
                     break;
                 case VARCHAR:
-                    varchar_output(begin_left, offset_one, NULL);
+                    buf = varchar_output(begin_left, offset_one, buf);
                     break;
             }
         } else {
@@ -565,16 +566,16 @@ void query_join_output(char* begin_left, char* begin_right, struct relation* lef
                 if (offset_two != right_offset) {
                     switch (right->schema->start[j].content_type) {
                         case INTEGER:
-                            integer_output(begin_right, offset_two, NULL);
+                            buf = integer_output(begin_right, offset_two, buf);
                             break;
                         case BOOLEAN:
-                            boolean_output(begin_right, offset_two, NULL);
+                            buf = boolean_output(begin_right, offset_two, buf);
                             break;
                         case DOUBLE:
-                            double_output(begin_right, offset_two, NULL);
+                            buf = double_output(begin_right, offset_two, buf);
                             break;
                         case VARCHAR:
-                            varchar_output(begin_right, offset_two, NULL);
+                            buf = varchar_output(begin_right, offset_two, buf);
                             break;
                     }
                 }
@@ -583,10 +584,13 @@ void query_join_output(char* begin_left, char* begin_right, struct relation* lef
         }
         offset_one += left->schema->start[i].size;
     }
+    safe_string_concatenation(&buf, "\n");
     printf("\n");
+    return buf;
 }
 
-uint32_t query_join_attempt(FILE *file, struct relation* left, struct relation* right, struct query_params* left_query, struct query_params* right_query, char* left_row) {
+char * query_join_attempt(FILE *file, struct relation *left, struct relation *right, struct query_params *left_query,
+                          struct query_params *right_query, char *left_row, char *buf) {
     struct row_header* row_header =  malloc(sizeof(struct row_header));
 
     uint32_t ptr = sizeof(struct page_header) + sizeof(uint16_t) + sizeof(struct column) * right->schema->count;
@@ -606,26 +610,42 @@ uint32_t query_join_attempt(FILE *file, struct relation* left, struct relation* 
             fseek(file, (page_header->page_number - 1) * DEFAULT_PAGE_SIZE_BYTES + ptr + sizeof(struct row_header), SEEK_SET);
             fread(row_ptr, right->schema->length, 1, file);
             switch (right_query->content_type) {
-                case INTEGER:
-                    if (integer_query_join_compare(left_row, row_ptr, left_query, right_query, left, right)) {
-                        return 1;
-                    }
-                    break;
-                case BOOLEAN:
-                    if (boolean_query_join_compare(left_row, row_ptr, left_query, right_query, left, right)) {
-                        return 1;
-                    }
-                    break;
-                case DOUBLE:
-                    if (double_query_join_compare(left_row, row_ptr, left_query, right_query, left, right)) {
-                        return 1;
-                    }
-                    break;
-                case VARCHAR:
-                    if (varchar_query_join_compare(left_row, row_ptr, left_query, right_query, left, right)) {
-                        return 1;
-                    }
-                    break;
+//                case INTEGER:
+//                    if (integer_query_join_compare(left_row, row_ptr, left_query, right_query, left, right)) {
+//                        return 1;
+//                    }
+//                    break;
+//                case BOOLEAN:
+//                    if (boolean_query_join_compare(left_row, row_ptr, left_query, right_query, left, right)) {
+//                        return 1;
+//                    }
+//                    break;
+//                case DOUBLE:
+//                    if (double_query_join_compare(left_row, row_ptr, left_query, right_query, left, right)) {
+//                        return 1;
+//                    }
+//                    break;
+//                case VARCHAR:
+//                    if (varchar_query_join_compare(left_row, row_ptr, left_query, right_query, left, right)) {
+//                        return 1;
+//                    }
+//                    break;
+                    case INTEGER:
+                        buf = integer_query_join_compare(left_row, row_ptr, left_query, right_query, left, right, buf);
+                        return buf;
+                        break;
+                    case BOOLEAN:
+                        buf = boolean_query_join_compare(left_row, row_ptr, left_query, right_query, left, right, buf);
+                        return buf;
+                        break;
+                    case DOUBLE:
+                        buf = double_query_join_compare(left_row, row_ptr, left_query, right_query, left, right, buf);
+                        return buf;
+                        break;
+                    case VARCHAR:
+                        buf = varchar_query_join_compare(left_row, row_ptr, left_query, right_query, left, right, buf);
+                        return buf;
+                        break;
                 }
             }
 
@@ -641,11 +661,12 @@ uint32_t query_join_attempt(FILE *file, struct relation* left, struct relation* 
     free(row_ptr);
     free(row_header);
     free(page_header);
-    return 0;
+    return buf;
 }
 
 
-void query_join(FILE *file, struct relation* left, struct relation* right, struct query_params* left_query, struct query_params* right_query) {
+char * query_join(FILE *file, struct relation *left, struct relation *right, struct query_params *left_query,
+                  struct query_params *right_query, char *buf) {
     uint32_t result_count = 0;
     uint32_t ptr = sizeof(struct page_header) + sizeof(uint16_t) + sizeof(struct column) * left->schema->count;
 
@@ -664,7 +685,8 @@ void query_join(FILE *file, struct relation* left, struct relation* right, struc
         if (row_header->is_available) {
             fseek(file, (page_header->page_number - 1) * DEFAULT_PAGE_SIZE_BYTES + ptr + sizeof(struct row_header), SEEK_SET);
             fread(row_ptr, left->schema->length, 1, file);
-            result_count += query_join_attempt(file, left, right, left_query, right_query, row_ptr);
+            buf = query_join_attempt(file, left, right, left_query, right_query, row_ptr, buf);
+            result_count++;
         }
 
         ptr += sizeof(struct row_header) + left->schema->length;
@@ -680,7 +702,8 @@ void query_join(FILE *file, struct relation* left, struct relation* right, struc
     free(row_header);
     free(page_header);
     printf("Joined %d rows\n", result_count);
-
+    safe_string_concatenation(&buf, result_count);
+    return buf;
 }
 
 bool is_relation_present(FILE *file, const size_t length, const char* name, struct relation_header* relation_header) {

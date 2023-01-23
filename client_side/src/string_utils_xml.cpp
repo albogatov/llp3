@@ -108,11 +108,10 @@ std::string XmlSelectNode(ast_node* node, int indentation) {
         res += tab;
     }
     res += "<join>";
-    if (node->second != nullptr) {
-        res += "\n";
-        res += XmlToString(node->second, indentation + 2);
+    if (node->fields_two.string) {
+        res += node->fields_two.string ;
     } else {
-        res += "<nullable>nullptr</nullable>";
+        res += "><nullable>nullptr</nullable>";
     }
     res += "</join>\n";
     for (int i = 0; i < indentation; ++i) {

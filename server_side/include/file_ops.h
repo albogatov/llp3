@@ -57,10 +57,13 @@ void delete_execute(FILE *file, struct relation* relation, struct query_params* 
 void update_query(char *begin, void *value, struct query_params *query, struct relation *relation, uint32_t ptr,
                   uint32_t page_number, bool show_output);
 
-uint32_t query_join_attempt(FILE *file, struct relation* left, struct relation* right, struct query_params* left_query, struct query_params* right_query, char* left_row);
-void query_join(FILE *file, struct relation* left, struct relation* right, struct query_params* left_query, struct query_params* right_query);
+char * query_join_attempt(FILE *file, struct relation *left, struct relation *right, struct query_params *left_query,
+                          struct query_params *right_query, char *left_row, char *buf);
+char * query_join(FILE *file, struct relation *left, struct relation *right, struct query_params *left_query,
+                  struct query_params *right_query, char *buf);
 
-void query_join_output(char* begin_left, char* begin_right, struct relation* left, struct relation* right, uint32_t left_offset, uint32_t right_offset);
+char * query_join_output(char *begin_left, char *begin_right, struct relation *left, struct relation *right,
+                         uint32_t left_offset, uint32_t right_offset, char *buf);
 
 long int database_get_size(FILE* file);
 #ifdef __cplusplus

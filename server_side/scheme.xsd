@@ -27,7 +27,6 @@
     <xs:complexType name="join_t">
         <xs:choice>
             <xs:element name="nullable" type="xs:string"/>
-            <xs:element name="select" type="select_t"/>
         </xs:choice>
     </xs:complexType>
 

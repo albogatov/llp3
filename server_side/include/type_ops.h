@@ -23,10 +23,21 @@ bool boolean_compare(char* row_ptr, void* value, uint32_t offset);
 bool varchar_compare(char* row_ptr, void* value, uint32_t offset, uint16_t column_size);
 bool double_compare(char* row_ptr, void* value, uint32_t offset);
 
-bool integer_query_join_compare(char* left_row, char* right_row, struct query_params* left_query, struct query_params* right_query, struct relation* left, struct relation* right);
-bool boolean_query_join_compare(char* left_row, char* right_row, struct query_params* left_query, struct query_params* right_query, struct relation* left, struct relation* right);
-bool varchar_query_join_compare(char* left_row, char* right_row, struct query_params* left_query, struct query_params* right_query, struct relation* left, struct relation* right);
-bool double_query_join_compare(char* left_row, char* right_row, struct query_params* left_query, struct query_params* right_query, struct relation* left, struct relation* right);
+char * integer_query_join_compare(char *left_row, char *right_row, struct query_params *left_query,
+                                  struct query_params *right_query, struct relation *left, struct relation *right,
+                                  char *buf);
+
+char * boolean_query_join_compare(char *left_row, char *right_row, struct query_params *left_query,
+                                  struct query_params *right_query, struct relation *left, struct relation *right,
+                                  char *buf);
+
+char * varchar_query_join_compare(char *left_row, char *right_row, struct query_params *left_query,
+                                  struct query_params *right_query, struct relation *left, struct relation *right,
+                                  char *buf);
+
+char * double_query_join_compare(char *left_row, char *right_row, struct query_params *left_query,
+                                 struct query_params *right_query, struct relation *left, struct relation *right,
+                                 char *buf);
 
 char* safe_string_copy (const char* from);
 void safe_string_concatenation(char** str, const char * str2);
