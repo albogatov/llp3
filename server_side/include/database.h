@@ -13,7 +13,7 @@
 struct schema;
 struct relation_header;
 
-enum query_op;
+enum query_op : int;
 
 enum database_state {
     SAVED_IN_FILE = 0,
@@ -55,7 +55,16 @@ struct page_header* page_create(struct database_header* database_header, struct 
 struct page_header* page_add_real(struct database_header* database_header);
 struct page_header* page_add(struct relation_header* relation_header, struct database_header* database_header);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct database* database_get(const char *const file, const enum database_state state);
+
+#ifdef __cplusplus
+}
+#endif
+
 struct database* database_create_in_file(const char *const file);
 struct database* database_get_from_file(const char *const file);
 

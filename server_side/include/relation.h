@@ -14,7 +14,7 @@
 
 struct query;
 
-enum content_type {
+enum content_type : int {
     INTEGER = 0,
     BOOLEAN,
     DOUBLE,

@@ -6,7 +6,7 @@
 #include <inttypes.h>
 #include "database.h"
 
-enum content_type;
+enum content_type : int;
 struct database_header;
 struct column;
 struct relation;
@@ -24,7 +24,7 @@ enum file_op_status  {
 
 bool is_relation_present(FILE *file, const size_t length, const char* name, struct relation_header* relation_header);
 
-enum file_op_status file_update_last_page(FILE *file, uint32_t old_number, uint32_t new);
+enum file_op_status file_update_last_page(FILE *file, uint32_t old_number, uint32_t new_);
 enum file_op_status file_open(FILE **file, const char *const name, const char *const mode);
 enum file_op_status file_close(FILE *file);
 
@@ -39,7 +39,7 @@ enum file_op_status relation_read_columns(FILE *file, struct relation* relation)
 
 enum file_op_status row_write_to_page(FILE *file, uint32_t page_number, struct row* row);
 
-enum file_op_status database_update_last_page(FILE *file, struct database_header* database_header, uint32_t new);
+enum file_op_status database_update_last_page(FILE *file, struct database_header* database_header, uint32_t new_);
 enum file_op_status database_header_save_changes(FILE *file, struct database_header* database_header);
 enum file_op_status database_header_read(FILE *file, struct database_header* database_header);
 enum file_op_status database_save_to_file(FILE *file, struct database_header* database_header, struct page_header* page_header_real);

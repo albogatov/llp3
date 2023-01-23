@@ -8,7 +8,7 @@
 #define MAX_RELATION_NAME_LENGTH 20
 #define MAX_NAME_LENGTH 20
 
-enum query_op {
+enum query_op : int {
     SELECT = 0,
     UPDATE,
     DELETE,

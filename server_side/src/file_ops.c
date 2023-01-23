@@ -17,12 +17,12 @@ enum file_op_status file_close(FILE *file) {
     else return ERROR;
 }
 
-enum file_op_status file_update_last_page(FILE *file, uint32_t old_number, uint32_t new) {
+enum file_op_status file_update_last_page(FILE *file, uint32_t old_number, uint32_t new_) {
     struct page_header* page_header = malloc(sizeof(struct page_header));
 
     fseek(file, (old_number - 1) * DEFAULT_PAGE_SIZE_BYTES, SEEK_SET);
     fread(page_header, sizeof(struct page_header), 1, file);
-    page_header->next_page_number = new;
+    page_header->next_page_number = new_;
 
     fseek(file, (old_number - 1) * DEFAULT_PAGE_SIZE_BYTES, SEEK_SET);
     if (fwrite(page_header, sizeof(struct page_header), 1, file) == 1) {
@@ -68,7 +68,7 @@ enum file_op_status database_header_read(FILE *file, struct database_header* dat
     } else return ERROR;
 }
 
-enum file_op_status database_update_last_page(FILE *file, struct database_header* database_header, uint32_t new) {
+enum file_op_status database_update_last_page(FILE *file, struct database_header* database_header, uint32_t new_) {
     uint32_t last_page_number = database_header->last_page_number;
     struct page_header* page_header = malloc(sizeof(struct page_header));
 
@@ -78,7 +78,7 @@ enum file_op_status database_update_last_page(FILE *file, struct database_header
 
     fread(page_header, sizeof(struct page_header), 1, file);
 
-    page_header->next_page_number = new;
+    page_header->next_page_number = new_;
 
     if (last_page_number == 1) {
         fseek(file, sizeof(struct database_header), SEEK_SET);

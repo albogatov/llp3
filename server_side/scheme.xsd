@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:complexType name="variant">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="type" type="xs:string" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="compare_t">
+        <xs:sequence>
+            <xs:element name="left_operand" type="variant" />
+            <xs:element name="compare_by" type="xs:string"/>
+            <xs:element name="right_operand" type="variant"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="cmp_t">
+        <xs:choice>
+            <xs:element name="compare" type="compare_t"/>
+            <xs:element name="nullable" type="xs:string"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="join_t">
+        <xs:choice>
+            <xs:element name="nullable" type="xs:string"/>
+            <xs:element name="select" type="select_t"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="select_t">
+        <xs:sequence>
+            <xs:element name="table" type="xs:string"/>
+            <xs:element name="cmp" type="cmp_t"/>
+            <xs:element name="join" type="join_t"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="delete_t">
+        <xs:sequence>
+            <xs:element name="table" type="xs:string"/>
+            <xs:element name="cmp" type="cmp_t"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="list_t">
+        <xs:sequence>
+            <xs:element name="pair" minOccurs="1" maxOccurs="50">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="value" type="variant" minOccurs="2" maxOccurs="2"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="insert_t">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="list" type="list_t"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="create_t">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="list_values">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="list" type="list_t"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="command_t">
+        <xs:choice>
+            <xs:element name="select" type="select_t"/>
+            <xs:element name="delete" type="delete_t"/>
+            <xs:element name="insert" type="insert_t"/>
+            <xs:element name="create" type="create_t"/>
+            <xs:element name="drop" type="xs:string"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:element name="command" type="command_t"/>
+
+</xs:schema>

@@ -103,7 +103,7 @@ std::string XmlSelectNode(ast_node* node, int indentation) {
     } else {
         res += "<nullable>nullptr</nullable>";
     }
-    res += "\n</cmp>\n";
+    res += "</cmp>\n";
     for (int i = 0; i < indentation + 1; ++i) {
         res += tab;
     }
@@ -114,7 +114,7 @@ std::string XmlSelectNode(ast_node* node, int indentation) {
     } else {
         res += "<nullable>nullptr</nullable>";
     }
-    res += "\n</join>\n";
+    res += "</join>\n";
     for (int i = 0; i < indentation; ++i) {
         res += tab;
     }

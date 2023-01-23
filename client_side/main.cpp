@@ -17,17 +17,17 @@ int main() {
 
     std::string inp;
 
-//    int32_t sock = socket(AF_INET, SOCK_STREAM, 0);
-//
-//    sockaddr_in addr{};
-//    addr.sin_family = AF_INET;
-//    addr.sin_port = htons(8187);
-//    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-//
-//    if (connect(sock, reinterpret_cast<sockaddr*>(&addr), sizeof (addr)) < 0) {
-//        std::cout << "connect error" << std::endl;
-//        return -1;
-//    }
+    int32_t sock = socket(AF_INET, SOCK_STREAM, 0);
+
+    sockaddr_in addr{};
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(8187);
+    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+
+    if (connect(sock, reinterpret_cast<sockaddr*>(&addr), sizeof (addr)) < 0) {
+        std::cout << "connect error" << std::endl;
+        return -1;
+    }
 
     char buf[1024 * 100];
 
@@ -40,16 +40,16 @@ int main() {
         char* str = xml_string.data();
         std::cout << str << std::endl;
 
-//        send(sock, str, xml_string.size(), 0);
-//        auto response_size = recv(sock, buf, 1024 * 100, 0);
-//
-//        if (response_size == -1) {
-//            return -1;
-//        }
-//
-//        buf[response_size] = 0;
-//
-//        std::cout << buf << std::endl;
+        send(sock, str, xml_string.size(), 0);
+        auto response_size = recv(sock, buf, 1024 * 100, 0);
+
+        if (response_size == -1) {
+            return -1;
+        }
+
+        buf[response_size] = 0;
+
+        std::cout << buf << std::endl;
 
     }
     return 0;
