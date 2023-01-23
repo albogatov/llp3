@@ -1,6 +1,7 @@
 #ifndef AST_H
 #define AST_H
 #include <stdbool.h>
+#include <string.h>
 
 enum ast_node_type {
     NAME_NODE,

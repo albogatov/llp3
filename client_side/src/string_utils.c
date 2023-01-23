@@ -39,16 +39,18 @@ char* print_string_node(ast_node* node, int indentation) {
 char* print_column_node(ast_node* node, int indentation) {
     char* output = malloc(sizeof(char));
     indent(indentation, &output);
-    safe_string_concatenation(&output, "COLUMN {\n");
+    safe_string_concatenation(&output, "KEY {\n");
     indent(indentation + 1, &output);
     if (node->fields_one.string) {
-        safe_string_concatenation(&output, "table: ");
+        safe_string_concatenation(&output, "row_alias: ");
         safe_string_concatenation(&output, node->fields_one.string);
         safe_string_concatenation(&output, "\n");
         indent(indentation + 1, &output);
     }
     if (node->fields_two.string) {
-        safe_string_concatenation(&output, "column_name: ");
+        if (node->fields_one.string)
+            safe_string_concatenation(&output, "column: ");
+        else safe_string_concatenation(&output, "row_alias: ");
         safe_string_concatenation(&output, node->fields_two.string);
         safe_string_concatenation(&output, "\n");
         indent(indentation, &output);
@@ -124,7 +126,7 @@ char* print_pair_node(ast_node* node, int indentation) {
     indent(indentation, &output);
     safe_string_concatenation(&output, "PAIR {\n");
     indent(indentation + 1, &output);
-    safe_string_concatenation(&output, "column_name: ");
+    safe_string_concatenation(&output, "key_name: ");
     safe_string_concatenation(&output, node->fields_one.string);
     safe_string_concatenation(&output, "\n");
     char* pair = to_string_general(node->second, indentation + 1);
@@ -142,7 +144,7 @@ char* print_select_node(ast_node* node, int indentation) {
     safe_string_concatenation(&output, "FOR {\n");
     char* ptr;
     indent(indentation + 1, &output);
-    safe_string_concatenation(&output, "COLUMNS: ");
+    safe_string_concatenation(&output, "KEYS: ");
     if (node->third != NULL) {
         safe_string_concatenation(&output, "\n");
         ptr = to_string_general(node->third, indentation + 2);

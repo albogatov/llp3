@@ -4,8 +4,8 @@ all: include/ast.h src/ast.c include/output.h src/output.c include/string_utils.
 	make run
 
 aql_parser: src/ast.c src/output.c src/string_utils.c
-	bison -d parser.y -Wcounterexamples
 	flex tokenizer.l
+	bison -d parser.y
 	gcc -g -o $@ parser.tab.c lex.yy.c $^
 
 run:

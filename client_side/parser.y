@@ -68,7 +68,7 @@
 %type <nonterminal> logic_statement
 
 %type <nonterminal> column
-%type <nonterminal> column_name
+%type <nonterminal> row_alias
 
 %type <nonterminal> terminal
 
@@ -119,18 +119,18 @@ select_query:
 |   select_join_with_filter
 ;
 select_simple:
-|   FOR column_name IN STR RETURN STR { $$ = new_select($4, NULL, NULL, NULL, $2); }
+|   FOR row_alias IN STR RETURN STR { $$ = new_select($4, NULL, NULL, NULL, $2); }
 ;
 select_with_filter:
-|   FOR column_name IN STR FILTER filter_condition RETURN STR { $$ = new_select($4, $6, NULL, NULL, $2); }
+|   FOR row_alias IN STR FILTER filter_condition RETURN STR { $$ = new_select($4, $6, NULL, NULL, $2); }
 ;
 
 select_join_simple:
-|   FOR column_name IN STR FOR column_name IN STR RETURN STR "," STR { $$ = new_select($4, NULL, $8, $6, $2); }
+|   FOR row_alias IN STR FOR row_alias IN STR RETURN STR "," STR { $$ = new_select($4, NULL, $8, $6, $2); }
 ;
 
 select_join_with_filter:
-|   FOR column_name IN STR FOR column_name IN STR FILTER filter_condition RETURN STR "," STR { $$ = new_select($4, $10, $8, $6, $2); }
+|   FOR row_alias IN STR FOR row_alias IN STR FILTER filter_condition RETURN STR "," STR { $$ = new_select($4, $10, $8, $6, $2); }
 ;
 
 update_query:
@@ -138,10 +138,10 @@ update_query:
 |   update_with_filter
 ;
 update_simple:
-|   FOR column_name IN STR UPDATE STR WITH "{" values_list "}" IN STR { $$ = new_update($4, NULL, $9); }
+|   FOR row_alias IN STR UPDATE STR WITH "{" values_list "}" IN STR { $$ = new_update($4, NULL, $9); }
 ;
 update_with_filter:
-|   FOR column_name IN STR FILTER filter_condition UPDATE STR WITH "{" values_list "}" IN STR { $$ = new_update($4, $6, $11); }
+|   FOR row_alias IN STR FILTER filter_condition UPDATE STR WITH "{" values_list "}" IN STR { $$ = new_update($4, $6, $11); }
 ;
 
 delete_query:
@@ -149,10 +149,10 @@ delete_query:
 |   delete_with_filter
 ;
 delete_simple:
-|   FOR column_name IN STR REMOVE STR IN STR { $$ = new_delete($4, NULL, $2); }
+|   FOR row_alias IN STR REMOVE STR IN STR { $$ = new_delete($4, NULL, $2); }
 ;
 delete_with_filter:
-|   FOR column_name IN STR FILTER filter_condition REMOVE STR IN STR { $$ = new_delete($4, $6, $2); }
+|   FOR row_alias IN STR FILTER filter_condition REMOVE STR IN STR { $$ = new_delete($4, $6, $2); }
 ;
 
 insert_query:
@@ -193,7 +193,7 @@ column:
 |   STR DOT STR { $$ = new_name($1, $3); }
 ;
 
-column_name:
+row_alias:
 |   STR { $$ = new_name(NULL, $1); }
 ;
 
