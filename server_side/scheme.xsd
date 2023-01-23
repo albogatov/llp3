@@ -38,10 +38,17 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="delete_t">
+    <xs:complexType name="update_t">
         <xs:sequence>
             <xs:element name="table" type="xs:string"/>
             <xs:element name="cmp" type="cmp_t"/>
+            <xs:element name="list_values">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="list" type="list_t"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
         </xs:sequence>
     </xs:complexType>
 
@@ -80,10 +87,9 @@
     <xs:complexType name="command_t">
         <xs:choice>
             <xs:element name="select" type="select_t"/>
-            <xs:element name="delete" type="delete_t"/>
+            <xs:element name="update" type="update_t"/>
             <xs:element name="insert" type="insert_t"/>
             <xs:element name="create" type="create_t"/>
-            <xs:element name="drop" type="xs:string"/>
         </xs:choice>
     </xs:complexType>
 

@@ -110,12 +110,9 @@ int main() {
 
         io_context.run();
 
+        database_close(test_database);
+
     } catch (std::exception& e) {
         std::printf("Exception: %s\n", e.what());
     }
 }
-
-
-
-
-

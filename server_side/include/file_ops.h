@@ -50,8 +50,8 @@ void row_remove(struct relation *relation, uint32_t ptr, uint32_t page_number);
 
 char * select_execute(FILE *file, struct relation *relation, uint32_t offset, uint16_t column_size, void *value,
                       enum content_type type, int32_t row_count, bool show_output, char *buf);
-void update_execute(FILE *file, struct relation *relation, struct query_params *first, struct query_params *second,
-                    void **values, bool show_output);
+char * update_execute(FILE *file, struct relation *relation, struct query_params *first, struct query_params *second,
+                      void **values, bool show_output, char *buf);
 void delete_execute(FILE *file, struct relation* relation, struct query_params* query, void* value);
 
 void update_query(char *begin, void *value, struct query_params *query, struct relation *relation, uint32_t ptr,

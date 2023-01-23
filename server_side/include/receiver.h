@@ -163,12 +163,94 @@ namespace receiver {
             return "inserted into " + name;
         }
 
-//        std::string select_op(const boost::property_tree::ptree &pt, database* db) {
-//            return select_op(pt, db);
-//        }
-
         std::string update_op(const boost::property_tree::ptree &pt, database* db) {
+            auto name = pt.get<std::string>("table");
+            auto list = pt.get_child("cmp");
 
+
+            list = list.get_child("filter");
+
+            auto column = list.get<std::string>("left_operand");
+            int column_len = column.length();
+            char* column_ar = new char[column_len + 1];
+            strcpy(column_ar, column.c_str());
+
+            auto cmp = list.get<std::string>("compare_by");
+            auto value = list.get<std::string>("right_operand");
+            void* value_v = &value;
+            std::string value_c = value;
+
+            content_type as_type = VARCHAR;
+            auto this_type = list.get<std::string>("right_operand.<xmlattr>.type");
+            if (this_type == "number") {
+                as_type = INTEGER;
+            } else if (this_type == "string") {
+                as_type = VARCHAR;
+            } else if (this_type == "bool") {
+                as_type = BOOLEAN;
+            } else if (this_type == "float") {
+                as_type = DOUBLE;
+            }
+
+            void* query_vals[2];
+
+            query_vals[0] = value_v;
+
+            auto list_vals = pt.get_child("list_values").get_child("list");
+
+            std::vector<std::pair<std::string, void*>> values;
+            BOOST_FOREACH(const auto &v, list_vals) {
+                            std::string str;
+                            std::string tp;
+                            int help_int;
+                            std::string help_string;
+                            bool help_bool;
+                            double help_double;
+                            void* val;
+
+                            BOOST_FOREACH(const auto &u, v.second) {
+                                            auto this_tp = u.second.get<std::string>("<xmlattr>.type");
+                                            if (this_tp == "column_name") {
+                                                str = u.second.get<std::string>("");
+                                            } else {
+                                                tp = u.second.get<std::string>("");
+                                                tp = u.second.get<std::string>("<xmlattr>.type");
+                                                switch (type_from_str(tp)) {
+                                                    case INTEGER:
+                                                        help_int = u.second.get<int>("");
+                                                        val = &help_int;
+                                                        break;
+                                                    case VARCHAR:
+                                                        help_string = u.second.get<std::string>("");
+                                                        val = &help_string;
+                                                        break;
+                                                    case DOUBLE:
+                                                        help_double = u.second.get<double>("");
+                                                        val = &help_double;
+                                                        break;
+                                                    case BOOLEAN:
+                                                        help_bool = u.second.get<bool>("");
+                                                        val = &help_bool;
+                                                        break;
+                                            }
+                                        }
+
+                            values.emplace_back(str, val);
+                        }
+            std::reverse(values.begin(), values.end());
+
+            query_vals[1] = values[0].second;
+            char* columns_vals[2] = { column.data() ,  values[0].first.data() };
+
+            char* res1;
+            relation* relation = relation_get(name.c_str(), db);
+            query* select_query = query_make(UPDATE, relation, columns_vals, query_vals, -1);
+            res1 = query_execute(select_query, true, res1);
+            if (res1) {
+                std::string res(res1);
+                return !res.empty() ? res : "empty";
+            } else return "Something went very wrong";
+        }
         }
 
         std::string delete_op(const boost::property_tree::ptree &pt, database* db) {

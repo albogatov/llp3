@@ -89,7 +89,7 @@ char * row_select(struct query *query, bool show_output, char *buf) {
     return buf;
 }
 
-void row_update(struct query *query, bool show_output) {
+char * row_update(struct query *query, bool show_output, char *buf) {
     bool is_column_present_one = false;
     bool is_column_present_two = false;
     char name_one[MAX_NAME_LENGTH];
@@ -138,13 +138,14 @@ void row_update(struct query *query, bool show_output) {
         strncpy(query_two->name, "", MAX_NAME_LENGTH);
         strncpy(query_two->name, name_two, MAX_NAME_LENGTH);
 
-        update_execute(query->relation->relation_header->database->source_file, query->relation, query_one,
-                       query_two, query->value, show_output);
+        buf = update_execute(query->relation->relation_header->database->source_file, query->relation, query_one,
+                       query_two, query->value, show_output, buf);
 
         free(query_one);
         free(query_two);
 
     } else printf("Attribute is not present\n");
+    return buf;
 }
 
 void row_delete(struct query *query, bool show_output) {

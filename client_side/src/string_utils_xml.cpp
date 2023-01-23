@@ -4,6 +4,12 @@
 
 static const std::string tab = " ";
 
+void indent(int indentation, std::string src) {
+    for (int i = 0; i < indentation; ++i) {
+        src += tab;
+    }
+}
+
 std::string ast_to_xml(ast_node* root) {
     std::string res = "<?xml version=\"1.0\"?>\n";
     return res + "<command>\n" + XmlToString(root, 0) + "\n</command>";
@@ -45,38 +51,26 @@ std::string XmlTypeNode(ast_node* node, int indentation) {
 
 std::string XmlListNode(ast_node* node, int indentation) {
     std::string res;
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     res += "<list>\n";
     ast_node* next = node;
     while (next != NULL) {
         res = res + XmlToString(next->first, indentation + 1) + "\n";
         next = next->second;
     }
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     return res + "</list>";
 }
 
 std::string XmlPairNode(ast_node* node, int indentation) {
     std::string res;
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     res += "<pair>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res = res + "<value type=\"column_name\">" + node->fields_one.string + "</value>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res += "<value type=" + XmlToString(node->second, indentation + 1) + "</value>\n";
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     return res + "</pair>";
 }
 
@@ -84,17 +78,11 @@ std::string XmlPairNode(ast_node* node, int indentation) {
 std::string XmlSelectNode(ast_node* node, int indentation) {
 
     std::string res;
-    for (int i = 0; i < indentation; ++i) {
-        res += " ";
-    }
+    indent(indentation, res);
     res += "<select>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res = res + "<table>" + node->fields_one.string + "</table>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res += "<cmp>";
 
     if (node->first != nullptr) {
@@ -104,9 +92,7 @@ std::string XmlSelectNode(ast_node* node, int indentation) {
         res += "<nullable>nullptr</nullable>";
     }
     res += "</cmp>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res += "<join>";
     if (node->fields_two.string) {
         res += node->fields_two.string ;
@@ -114,9 +100,7 @@ std::string XmlSelectNode(ast_node* node, int indentation) {
         res += "><nullable>nullptr</nullable>";
     }
     res += "</join>\n";
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     return res + "</select>";
 }
 
@@ -124,17 +108,11 @@ std::string XmlSelectNode(ast_node* node, int indentation) {
 std::string XmlDeleteNode(ast_node* node, int indentation) {
 
     std::string res;
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     res += "<delete>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res = res + "<table>" + node->fields_one.string + "</table>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res += "<cmp>";
 
     if (node->first != nullptr) {
@@ -144,29 +122,19 @@ std::string XmlDeleteNode(ast_node* node, int indentation) {
         res += "nullptr";
     }
     res += "</cmp>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res += "\n";
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     return res + "</delete>";
 }
 
 std::string XmlInsertNode(ast_node* node, int indentation) {
     std::string res;
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     res += "<insert>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res = res + "<name>" + node->fields_one.string + "</name>\n" + XmlToString(node->first, indentation + 1) + "\n";
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     return res + "</insert>";
 }
 
@@ -174,17 +142,11 @@ std::string XmlInsertNode(ast_node* node, int indentation) {
 std::string XmlUpdateNode(ast_node* node, int indentation) {
 
     std::string res;
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     res += "<update>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res = res + "<table>" + node->fields_one.string + "</table>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res += "<cmp>";
 
     if (node->first != nullptr) {
@@ -194,38 +156,26 @@ std::string XmlUpdateNode(ast_node* node, int indentation) {
         res += "nullptr";
     }
     res += "</cmp>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res += "<list_values>\n" + XmlToString(node->second, indentation + 2) + "\n</list_values>\n";
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     return res + "</update>";
 }
 
 std::string XmlCreateNode(ast_node* node, int indentation) {
     std::string res;
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     res += "<create>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res = res + "<name>" + node->fields_one.string + "</name>\n<list_values>" + XmlToString(node->first, indentation + 1) + "</list_values>\n";
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     return res + "</create>";
 }
 
 std::string XmlDropNode(ast_node* node, int indentation) {
 
     std::string res;
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     res = res + "<drop>" + node->fields_one.string + "</drop>";
 
     return res;
@@ -233,38 +183,24 @@ std::string XmlDropNode(ast_node* node, int indentation) {
 
 std::string XmlFilterNode(ast_node* node, int indentation) {
     std::string res;
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     res += "<filter><left_filter>\n" + XmlToString(node->first, indentation + 1) + "</left_filter>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res = res + "<operation>" + logic_repr_[node->fields_one.logic_op_type_type] + "</operation>\n<right_filter>" + XmlToString(node->second, indentation + 1) + "</right_filter>\n";
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     return res + "</filter>";
 }
 
 
 std::string XmlCmpNode(ast_node* node, int indentation) {
     std::string res;
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     res += "<filter><left_operand type=" + XmlToString(node->first, indentation + 1) + "</left_operand>\n";
-    for (int i = 0; i < indentation + 1; ++i) {
-        res += tab;
-    }
+    indent(indentation + 1, res);
     res = res + "<compare_by>" + cmp_op_repr_[node->fields_one.comp_op_type] + "</compare_by"">\n";
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     res += "<right_operand type=" + XmlToString(node->second, indentation + 1) + "</right_operand>\n";
-    for (int i = 0; i < indentation; ++i) {
-        res += tab;
-    }
+    indent(indentation, res);
     return res + "</filter>";
 }
 

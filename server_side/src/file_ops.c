@@ -399,8 +399,8 @@ char * select_execute(FILE *file, struct relation *relation, uint32_t offset, ui
     return buf;
 }
 
-void update_execute(FILE *file, struct relation *relation, struct query_params *first, struct query_params *second,
-                    void **values, bool show_output) {
+char * update_execute(FILE *file, struct relation *relation, struct query_params *first, struct query_params *second,
+                      void **values, bool show_output, char *buf) {
     uint32_t result_count = 0;
     uint32_t current = sizeof(struct page_header) + sizeof(uint16_t) + sizeof(struct column) * relation->schema->count;
 
@@ -470,6 +470,12 @@ void update_execute(FILE *file, struct relation *relation, struct query_params *
     free(page_header);
 
     printf("Updated %d rows\n", result_count);
+    char buffer[128];
+    sprintf(buffer, "Updated %d rows\n", result_count);
+    if (buf) {
+        safe_string_concatenation(&buf, buffer);
+    }
+    return buf;
 }
 
 

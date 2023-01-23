@@ -233,8 +233,7 @@ char * query_execute(struct query *query, bool show_output, char *buf) {
             return NULL;
             break;
         case UPDATE:
-            row_update(query, show_output);
-            return NULL;
+            return row_update(query, show_output, buf);
             break;
     }
 

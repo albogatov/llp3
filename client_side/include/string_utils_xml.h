@@ -5,5 +5,6 @@
 
 std::string XmlToString(ast_node* node, int indentation);
 std::string ast_to_xml(ast_node* root);
+void indent( int indentation, std::string res);
 
 #endif //LLP3_XML_STRING_UTILS_XML_H
