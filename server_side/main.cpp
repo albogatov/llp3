@@ -6,7 +6,6 @@
 #include <boost/asio/write.hpp>
 #include <libxml/xmlreader.h>
 #include <libxml/encoding.h>
-#include <libxml/xmlwriter.h>
 
 
 #include <cstdio>
@@ -33,14 +32,7 @@ namespace this_coro = boost::asio::this_coro;
 xmlSchemaPtr schema = NULL;
 xmlSchemaParserCtxtPtr schema_parser_ctxt = NULL;
 xmlSchemaValidCtxtPtr valid_ctxt = NULL;
-int has_schema_errors = 0;
-int ret = -1;
 
-static void schemaParseErrorHandler(void *arg, xmlErrorPtr error)
-{
-    fprintf(stderr, "Error at line %d, column %d\n%s", error->line, error->int2, error->message);
-    *((bool*)arg) = true;
-}
 
 
 awaitable<void> request(tcp::socket& socket, database* db) {
@@ -52,29 +44,24 @@ awaitable<void> request(tcp::socket& socket, database* db) {
     std::string str(data);
     str.resize(n);
 
-    xmlTextReaderPtr reader = NULL;
     xmlDocPtr xml = xmlParseDoc((xmlChar*) str.c_str());
     if ( xmlSchemaValidateDoc(valid_ctxt, xml) == 0 ) {
         std::cout << str << std::endl;
     }
 
     auto res = receiver::evaluate(str, db);
-   co_await async_write(socket, boost::asio::buffer(res.c_str(), res.size()), use_awaitable);
+    co_await async_write(socket, boost::asio::buffer(res.c_str(), res.size()), use_awaitable);
 
 }
 
 awaitable<void> accept_new_client(tcp::socket socket, database* db) {
-    std::cout << "new client" << std::endl;
+    std::cout << "Client connected" << std::endl;
     try {
-
         for (;;) {
-
             co_await request(socket, db);
-
         }
-
     } catch (std::exception& e) {
-        std::printf("echo Exception: %s\n", e.what());
+        std::printf("Exception occurred: %s\n", e.what());
     }
 
 }
@@ -98,10 +85,9 @@ awaitable<void> listener(database* db) {
 
 int main() {
 
-    struct database* test_database = database_get("save.bin", NEW);
+    struct database* test_database = database_get("test_db.bin", NEW);
 
     xmlInitParser();
-
 
     if ((schema_parser_ctxt = xmlSchemaNewParserCtxt("/Users/abogatov/CLionProjects/llp3_xml/server_side/scheme.xsd")))
     {
@@ -112,38 +98,6 @@ int main() {
             valid_ctxt = xmlSchemaNewValidCtxt(schema);
         }
     }
-
-//    xmlTextReaderPtr reader = NULL;
-//    const char* filename = "/Users/abogatov/CLionProjects/llp3_xml/server_side/ex.xml";
-//    reader = xmlReaderForFile(filename, /*RPCXmlStream::STD_ENCODING,*/ NULL, 0);
-//
-//    if (reader != NULL)
-//    {
-//        if (valid_ctxt)
-//        {
-//            xmlTextReaderSchemaValidateCtxt(reader, valid_ctxt, 0);
-//            xmlSchemaSetValidStructuredErrors(valid_ctxt, schemaParseErrorHandler, &has_schema_errors);
-//        }
-//        ret = xmlTextReaderRead(reader);
-//        while (ret == 1 && !has_schema_errors)
-//        {
-//            ret = xmlTextReaderRead(reader);
-//        }
-//    }
-//
-//    if (ret != 0)
-//    {
-//        xmlErrorPtr err = xmlGetLastError();
-//        fprintf(stdout, "%s: failed to parse in line %d, col %d. Error %d: %s\n",
-//                err->file,
-//                err->line,
-//                err->int2,
-//                err->code,
-//                err->message);
-//    }
-//    xmlFreeTextReader(reader);
-//    xmlCleanupParser();
-//    return 0;
 
     try {
 
