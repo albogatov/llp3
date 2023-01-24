@@ -68,17 +68,27 @@ namespace receiver {
             auto value = list.get<std::string>("right_operand");
             void* value_v = &value;
             std::string value_c = value;
+            int help_int1;
+            std::string help_string;
+            bool help_bool1;
+            double help_double1;
 
-            content_type as_type = VARCHAR;
-            auto this_type = list.get<std::string>("right_operand.<xmlattr>.type");
-            if (this_type == "number") {
+            auto as_type = list.get<std::string>("right_operand.<xmlattr>.type");
+            if (as_type == "number") {
                 as_type = INTEGER;
-            } else if (this_type == "string") {
+                help_int1 = list.get<int>("right_operand");
+                value_v = &help_int1;
+            } else if (as_type == "string") {
                 as_type = VARCHAR;
-            } else if (this_type == "bool") {
+                value_v = &value;
+            } else if (as_type == "bool") {
                 as_type = BOOLEAN;
-            } else if (this_type == "float") {
+                help_bool1 = list.get<bool>("right_operand");
+                value_v = &help_bool1;
+            } else if (as_type == "float") {
                 as_type = DOUBLE;
+                help_double1 = list.get<double>("right_operand");
+                value_v = &help_double1;
             }
 
             if (select && pt.get_child("join").get<std::string>("nullable", "") != "nullptr") {
@@ -97,7 +107,7 @@ namespace receiver {
                 } else return "Something went very wrong";
             }
 
-                char* res1;
+                char* res1 = "";
                 relation* relation = relation_get(name.c_str(), db);
                 query* select_query = query_make(SELECT, relation, static_cast<char**>(&column_ar), &value_v, -1);
                 res1 = query_execute(select_query, true, res1);
@@ -166,8 +176,6 @@ namespace receiver {
         std::string update_op(const boost::property_tree::ptree &pt, database* db) {
             auto name = pt.get<std::string>("table");
             auto list = pt.get_child("cmp");
-
-
             list = list.get_child("filter");
 
             auto column = list.get<std::string>("left_operand");
