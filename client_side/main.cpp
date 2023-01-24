@@ -11,14 +11,13 @@
 #include "parser.tab.h"
 #include "include/string_utils_xml.h"
 
-int main(int argc, char* argv[]) {
+int main() {
 
-    if (argc < 1) {
-        std::cout << "You must enter server port" << std::endl;
-        return -1;
-    }
+    std::cout << "Enter port" << std::endl;
 
-    int port = atoi(argv[0]);
+    int port;
+
+    std::cin >> port;
 
     ast_node* this_root;
 

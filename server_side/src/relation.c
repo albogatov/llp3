@@ -1,4 +1,5 @@
 #include "../include/relation.h"
+#include "../include/type_ops.h"
 
 void attribute_add(struct row* row, char* name, enum content_type content_type, void* value) {
     relation_read_columns(row->relation->relation_header->database->source_file, row->relation); //нужно для таблиц созданных до
@@ -85,7 +86,10 @@ char * row_select(struct query *query, bool show_output, char *buf) {
                                             query->name[0], query->relation->schema->count);
         buf = select_execute(query->relation->relation_header->database->source_file, query->relation, offset, size,
                        query->value[0], content_type, query->number, show_output, buf);
-    } else printf("Attribute for this query does not exist\n");
+    } else {
+        printf("Attribute for this query does not exist\n");
+        safe_string_concatenation(&buf, "Attribute for this query does not exist\n");
+    }
     return buf;
 }
 
@@ -144,7 +148,10 @@ char * row_update(struct query *query, bool show_output, char *buf) {
         free(query_one);
         free(query_two);
 
-    } else printf("Attribute is not present\n");
+    } else {
+        printf("Attribute is not present\n");
+        safe_string_concatenation(&buf, "Attribute is not present\n");
+    }
     return buf;
 }
 
@@ -180,7 +187,10 @@ char * row_delete(struct query *query, bool show_output, char *buf) {
                        query->value[0], buf);
 
         free(query_params);
-    } else printf("Attribute is not present\n");
+    } else {
+        printf("Attribute is not present\n");
+        safe_string_concatenation(&buf, "Attribute is not present\n");
+    }
     return buf;
 }
 

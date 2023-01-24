@@ -27,6 +27,7 @@
     <xs:complexType name="join_t">
         <xs:choice>
             <xs:element name="nullable" type="xs:string"/>
+            <xs:element name="value" type="variant" minOccurs="0" maxOccurs="1"/>
         </xs:choice>
     </xs:complexType>
 

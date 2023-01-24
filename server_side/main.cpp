@@ -66,9 +66,15 @@ awaitable<void> accept_new_client(tcp::socket socket, database* db) {
 
 }
 
-awaitable<void> listener(database* db, char* port) {
+awaitable<void> listener(database* db) {
 
-    unsigned short port_num = atoi( port );
+    std::cout << "Enter port" << std::endl;
+
+    int port;
+
+    std::cin >> port;
+
+    unsigned short port_num = (unsigned short) (port);
     auto executor = co_await this_coro::executor;
     tcp::acceptor acceptor(executor, {tcp::v4(), port_num});
 
@@ -85,8 +91,8 @@ awaitable<void> listener(database* db, char* port) {
 
 
 int main(int argc, char *argv[]) {
-    if (argc < 3) {
-        std::cout << "Usage is: server <server_port> <db_file> <new_is_true>";
+    if (argc < 2) {
+        std::cout << "Usage is: server <db_file> <new_is_true>";
         return -1;
     }
 
@@ -114,7 +120,7 @@ int main(int argc, char *argv[]) {
         boost::asio::signal_set signals(io_context, SIGINT, SIGTERM);
         signals.async_wait([&](auto, auto){ io_context.stop(); });
 
-        co_spawn(io_context, listener(test_database, argv[0]), detached);
+        co_spawn(io_context, listener(test_database), detached);
 
         io_context.run();
 

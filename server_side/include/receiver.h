@@ -95,7 +95,7 @@ namespace receiver {
 
             if (select && pt.get_child("join").get<std::string>("nullable", "") != "nullptr") {
 
-                auto second_name = pt.get<std::string>("join");
+                auto second_name = pt.get_child("join").get_child("value").get<std::string>("");
                 std::string res;
                 relation* relation = relation_get(name.c_str(), db);
                 struct relation* relation_join = relation_get(second_name.c_str(), db);
@@ -291,17 +291,28 @@ namespace receiver {
             void* value_v = &value;
             std::string value_c = value;
             std::string init_data;
+            int help_int1;
+            std::string help_string;
+            bool help_bool1;
+            double help_double1;
 
             content_type as_type = VARCHAR;
             auto this_type = list.get<std::string>("right_operand.<xmlattr>.type");
             if (this_type == "number") {
                 as_type = INTEGER;
+                help_int1 = list.get<int>("right_operand");
+                value_v = &help_int1;
             } else if (this_type == "string") {
                 as_type = VARCHAR;
+                value_v = &value;
             } else if (this_type == "bool") {
                 as_type = BOOLEAN;
+                help_bool1 = list.get<bool>("right_operand");
+                value_v = &help_bool1;
             } else if (this_type == "float") {
                 as_type = DOUBLE;
+                help_double1 = list.get<double>("right_operand");
+                value_v = &help_double1;
             }
 
             char* res1 = init_data.data();

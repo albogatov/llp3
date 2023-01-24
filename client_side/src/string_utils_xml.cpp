@@ -95,9 +95,11 @@ std::string XmlSelectNode(ast_node* node, int indentation) {
     indent(indentation + 1, res);
     res += "<join>";
     if (node->fields_two.string) {
+        res += "<value type=\"table_name\">";
         res += node->fields_two.string ;
+        res += "</value>";
     } else {
-        res += "><nullable>nullptr</nullable>";
+        res += "<nullable>nullptr</nullable>";
     }
     res += "</join>\n";
     indent(indentation, res);
