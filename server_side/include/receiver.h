@@ -1,8 +1,6 @@
 #ifndef LLP3_XML_RECEIVER_H
 #define LLP3_XML_RECEIVER_H
 
-#pragma once
-
 #include <iostream>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
@@ -10,31 +8,11 @@
 
 #include "relation.h"
 
-enum type : int {
-    INT,
-    STR,
-    BUL,
-    FLT
-};
-
 namespace receiver {
 
     namespace {
 
-//        std::string clean(const std::string &input) {
-//            std::string res;
-//            res.reserve(input.size());
-//
-//            for (const auto &chr: input) {
-//                if (!std::isspace(chr)) {
-//                    res.push_back(chr);
-//                }
-//            }
-//
-//            return res;
-//        }
-
-        content_type type_from_str(std::string &str) {
+        content_type repr_to_content_type(std::string &str) {
             if (str == "BOOLEAN" || str == "bool") {
                 return BOOLEAN;
             } else if (str == "FLOAT_NUMBER" || str == "float_number") {
@@ -82,7 +60,6 @@ namespace receiver {
             } else if (as_type == "string") {
                 as_type = VARCHAR;
                 value_v = value.data();
-//                value_v = &value;
             } else if (as_type == "bool") {
                 as_type = BOOLEAN;
                 help_bool1 = list.get<bool>("right_operand");
@@ -143,7 +120,7 @@ namespace receiver {
                                                 str = u.second.get<std::string>("");
                                             } else {
                                                 tp = u.second.get<std::string>("<xmlattr>.type");
-                                                switch (type_from_str(tp)) {
+                                                switch (repr_to_content_type(tp)) {
                                                     case INTEGER:
                                                         help_int = u.second.get<int>("");
                                                         val = &help_int;
@@ -165,7 +142,7 @@ namespace receiver {
                                             }
                                         }
 
-                                        attribute_add(row_one, (char *)str.c_str(), type_from_str(tp),
+                                        attribute_add(row_one, (char *)str.c_str(), repr_to_content_type(tp),
                                                       val);
 
                         }
@@ -235,7 +212,7 @@ namespace receiver {
                                             } else {
                                                 tp = u.second.get<std::string>("");
                                                 tp = u.second.get<std::string>("<xmlattr>.type");
-                                                switch (type_from_str(tp)) {
+                                                switch (repr_to_content_type(tp)) {
                                                     case INTEGER:
                                                         help_int = u.second.get<int>("");
                                                         val = &help_int;
@@ -347,7 +324,7 @@ namespace receiver {
                     }
                 }
 
-                values.emplace_back(str, type_from_str(tp));
+                values.emplace_back(str, repr_to_content_type(tp));
             }
             std::reverse(values.begin(), values.end());
 
@@ -361,18 +338,7 @@ namespace receiver {
 
             return "created " + name;
         }
-//
-//        void print_tree(const boost::property_tree::ptree &pt, int level) {
-//            const std::string sep(2 * level, ' ');
-//            BOOST_FOREACH(const auto &v, pt) {
-//                std::cout
-//                        << sep
-//                        << v.first << " : " << v.second.data() << "\n";
-//                print_tree(v.second, level + 1);
-//            }
-        }
-
-//    }
+    }
 
     std::string request_op(std::string& input, database* db) {
 
@@ -390,19 +356,14 @@ namespace receiver {
             auto children = property_tree.get_child(command);
 
             if (command == "create") {
-                std::cout << "create query" << std::endl;
                 return create_op(children, db);
             } else if (command == "select") {
-                std::cout << "select query" << std::endl;
                 return select_op(children, db);
             } else if (command == "insert") {
-                std::cout << "insert query" << std::endl;
                 return insert_op(children, db);
             } else if (command == "update") {
-                std::cout << "update query" << std::endl;
                 return update_op(children, db);
             } else if (command == "delete") {
-                std::cout << "delete query" << std::endl;
                 return delete_op(children, db);
             } else {
                 return "unsupported operation";

@@ -4,9 +4,8 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/signal_set.hpp>
 #include <boost/asio/write.hpp>
-#include <libxml/xmlreader.h>
 #include <libxml/encoding.h>
-
+#include <libxml/xmlreader.h>
 
 #include <cstdio>
 #include <iostream>
@@ -35,7 +34,7 @@ xmlSchemaValidCtxtPtr valid_ctxt = NULL;
 
 
 
-awaitable<void> request(tcp::socket& socket, database* db) {
+awaitable<void> process_request(tcp::socket& socket, database* db) {
 
     char data[1024 * 100];
 
@@ -54,11 +53,11 @@ awaitable<void> request(tcp::socket& socket, database* db) {
     }
 }
 
-awaitable<void> accept_new_client(tcp::socket socket, database* db) {
+awaitable<void> client_connect_ack(tcp::socket socket, database* db) {
     std::cout << "Client connected" << std::endl;
     try {
         for (;;) {
-            co_await request(socket, db);
+            co_await process_request(socket, db);
         }
     } catch (std::exception& e) {
         std::printf("Exception occurred: %s\n", e.what());
@@ -83,7 +82,7 @@ awaitable<void> listener(database* db) {
     for (;;) {
 
         tcp::socket socket = co_await acceptor.async_accept(use_awaitable);
-        co_spawn(executor, accept_new_client(std::move(socket), db), detached);
+        co_spawn(executor, client_connect_ack(std::move(socket), db), detached);
 
     }
 }
