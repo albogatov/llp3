@@ -47,6 +47,8 @@ awaitable<void> request(tcp::socket& socket, database* db) {
     xmlDocPtr xml = xmlParseDoc((xmlChar*) str.c_str());
     if ( xmlSchemaValidateDoc(valid_ctxt, xml) == 0 ) {
         std::cout << str << std::endl;
+    } else {
+        std::string res = "What you're trying to do is currently unsupported by the DB";
     }
 
     auto res = receiver::request_op(str, db);
