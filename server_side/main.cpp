@@ -46,14 +46,12 @@ awaitable<void> request(tcp::socket& socket, database* db) {
 
     xmlDocPtr xml = xmlParseDoc((xmlChar*) str.c_str());
     if ( xmlSchemaValidateDoc(valid_ctxt, xml) == 0 ) {
-        std::cout << str << std::endl;
+        auto res = receiver::request_op(str, db);
+        co_await async_write(socket, boost::asio::buffer(res.c_str(), res.size()), use_awaitable);
     } else {
         std::string res = "What you're trying to do is currently unsupported by the DB";
+        co_await async_write(socket, boost::asio::buffer(res.c_str(), res.size()), use_awaitable);
     }
-
-    auto res = receiver::request_op(str, db);
-    co_await async_write(socket, boost::asio::buffer(res.c_str(), res.size()), use_awaitable);
-
 }
 
 awaitable<void> accept_new_client(tcp::socket socket, database* db) {
