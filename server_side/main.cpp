@@ -66,10 +66,11 @@ awaitable<void> accept_new_client(tcp::socket socket, database* db) {
 
 }
 
-awaitable<void> listener(database* db) {
+awaitable<void> listener(database* db, char* port) {
 
+    int port_num = atoi( port );
     auto executor = co_await this_coro::executor;
-    tcp::acceptor acceptor(executor, {tcp::v4(), 9030});
+    tcp::acceptor acceptor(executor, {tcp::v4(), port_num});
 
     std::cout << "Waiting for requests" << std::endl;
 
@@ -83,9 +84,16 @@ awaitable<void> listener(database* db) {
 
 
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc < 3) {
+        std::cout << "Usage is: server <server_port> <db_file> <new_is_true>";
+        return -1;
+    }
 
-    struct database* test_database = database_get("test_db.bin", NEW);
+    struct database* test_database;
+    if (argv[2] == "existing")
+        test_database = database_get(argv[1], SAVED_IN_FILE);
+    else test_database = database_get(argv[1], NEW);
 
     xmlInitParser();
 
@@ -106,7 +114,7 @@ int main() {
         boost::asio::signal_set signals(io_context, SIGINT, SIGTERM);
         signals.async_wait([&](auto, auto){ io_context.stop(); });
 
-        co_spawn(io_context, listener(test_database), detached);
+        co_spawn(io_context, listener(test_database, argv[0]), detached);
 
         io_context.run();
 
