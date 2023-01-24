@@ -479,7 +479,7 @@ char * update_execute(FILE *file, struct relation *relation, struct query_params
 }
 
 
-void delete_execute(FILE *file, struct relation* relation, struct query_params* query, void* value) {
+char * delete_execute(FILE *file, struct relation *relation, struct query_params *query, void *value, char *buf) {
     uint32_t result_count = 0;
     uint32_t ptr = sizeof(struct page_header) + sizeof(uint16_t) + sizeof(struct column) * relation->schema->count;
 
@@ -544,6 +544,12 @@ void delete_execute(FILE *file, struct relation* relation, struct query_params* 
     free(page_header);
     free(row_ptr);
     printf("Deleted %d rows\n", result_count);
+    char buffer[128];
+    sprintf(buffer, "Deleted %d rows\n", result_count);
+    if (buf) {
+        safe_string_concatenation(&buf, buffer);
+    }
+    return buf;
 }
 
 

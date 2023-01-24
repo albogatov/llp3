@@ -174,25 +174,36 @@ namespace receiver {
             int column_len = column.length();
             char* column_ar = new char[column_len + 1];
             strcpy(column_ar, column.c_str());
+            std::string init_buf;
 
             auto cmp = list.get<std::string>("compare_by");
             auto value = list.get<std::string>("right_operand");
             void* value_v = &value;
             std::string value_c = value;
-
+            int help_int;
+            std::string help_string;
+            bool help_bool;
+            double help_double;
+            void* query_vals[2];
             content_type as_type = VARCHAR;
             auto this_type = list.get<std::string>("right_operand.<xmlattr>.type");
             if (this_type == "number") {
                 as_type = INTEGER;
+                help_int = list.get<int>("right_operand");
+                value_v = &help_int;
             } else if (this_type == "string") {
                 as_type = VARCHAR;
+                value_v = &value;
             } else if (this_type == "bool") {
                 as_type = BOOLEAN;
+                help_bool = list.get<bool>("right_operand");
+                value_v = &help_bool;
             } else if (this_type == "float") {
                 as_type = DOUBLE;
+                help_double = list.get<double>("right_operand");
+                value_v = &help_double;
             }
 
-            void* query_vals[2];
 
             query_vals[0] = value_v;
 
@@ -202,10 +213,6 @@ namespace receiver {
             BOOST_FOREACH(const auto &v, list_vals) {
                             std::string str;
                             std::string tp;
-                            int help_int;
-                            std::string help_string;
-                            bool help_bool;
-                            double help_double;
                             void* val;
 
                             BOOST_FOREACH(const auto &u, v.second) {
@@ -242,7 +249,7 @@ namespace receiver {
             query_vals[1] = values[0].second;
             char* columns_vals[2] = { column.data() ,  values[0].first.data() };
 
-            char* res1;
+            char* res1 = init_buf.data();
             relation* relation = relation_get(name.c_str(), db);
             query* select_query = query_make(UPDATE, relation, columns_vals, query_vals, -1);
             res1 = query_execute(select_query, true, res1);
@@ -254,7 +261,44 @@ namespace receiver {
         }
 
         std::string delete_op(const boost::property_tree::ptree &pt, database* db) {
-          
+            auto name = pt.get<std::string>("table");
+            auto list = pt.get_child("cmp");
+
+
+            list = list.get_child("filter");
+
+            auto column = list.get<std::string>("left_operand");
+            int column_len = column.length();
+            char* column_ar = new char[column_len + 1];
+            strcpy(column_ar, column.c_str());
+
+            auto cmp = list.get<std::string>("compare_by");
+            auto value = list.get<std::string>("right_operand");
+            void* value_v = &value;
+            std::string value_c = value;
+            std::string init_data;
+
+            content_type as_type = VARCHAR;
+            auto this_type = list.get<std::string>("right_operand.<xmlattr>.type");
+            if (this_type == "number") {
+                as_type = INTEGER;
+            } else if (this_type == "string") {
+                as_type = VARCHAR;
+            } else if (this_type == "bool") {
+                as_type = BOOLEAN;
+            } else if (this_type == "float") {
+                as_type = DOUBLE;
+            }
+
+            char* res1 = init_data.data();
+            relation* relation = relation_get(name.c_str(), db);
+            query* select_query = query_make(DELETE, relation, static_cast<char**>(&column_ar), &value_v, -1);
+            res1 = query_execute(select_query, true, res1);
+            if (res1) {
+                std::string res(res1);
+                return !res.empty() ? res : "empty";
+            } else return "Something went very wrong";
+
         }
 
         std::string create_op(const boost::property_tree::ptree &pt, database* db) {

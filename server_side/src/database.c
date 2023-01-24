@@ -229,8 +229,7 @@ char * query_execute(struct query *query, bool show_output, char *buf) {
             return row_select(query, show_output, buf);
             break;
         case DELETE:
-            row_delete(query, show_output);
-            return NULL;
+            return row_delete(query, show_output, buf);
             break;
         case UPDATE:
             return row_update(query, show_output, buf);

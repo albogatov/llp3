@@ -102,7 +102,7 @@ void row_close(struct row* row);
 void row_insert(struct row* row);
 char * row_select(struct query *query, bool show_output, char *buf);
 char * row_update(struct query *query, bool show_output, char *buf);
-void row_delete(struct query *query, bool show_output);
+char * row_delete(struct query *query, bool show_output, char *buf);
 
 void integer_add(struct row* row, int32_t value, uint32_t offset);
 void boolean_add(struct row* row, bool value, uint32_t offset);

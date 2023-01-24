@@ -148,7 +148,7 @@ char * row_update(struct query *query, bool show_output, char *buf) {
     return buf;
 }
 
-void row_delete(struct query *query, bool show_output) {
+char * row_delete(struct query *query, bool show_output, char *buf) {
     bool is_column_present = false;
     enum content_type content_type;
     char name[MAX_NAME_LENGTH];
@@ -176,10 +176,12 @@ void row_delete(struct query *query, bool show_output) {
         strncpy(query_params->name, "", MAX_NAME_LENGTH);
         strncpy(query_params->name, name, MAX_NAME_LENGTH);
 
-        delete_execute(query->relation->relation_header->database->source_file, query->relation, query_params, query->value[0]);
+        buf = delete_execute(query->relation->relation_header->database->source_file, query->relation, query_params,
+                       query->value[0], buf);
 
         free(query_params);
     } else printf("Attribute is not present\n");
+    return buf;
 }
 
 void integer_add(struct row* row, int32_t value, uint32_t offset) {

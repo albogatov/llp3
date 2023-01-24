@@ -2,7 +2,7 @@
 
 bool integer_compare(char* row_ptr, void* value, uint32_t offset) {
     int32_t comparing = (int32_t) *(row_ptr + offset);
-    int32_t expecting = *((int32_t*) value);
+    int expecting = *((int*) value);
     if (comparing == expecting) {
         return true;
     }
