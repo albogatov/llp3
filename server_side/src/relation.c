@@ -12,7 +12,7 @@ void attribute_add(struct row* row, char* name, enum content_type content_type, 
                 boolean_add(row, *((bool *) value), offset);
                 break;
             case VARCHAR:
-                varchar_add(row, *((char **) value), offset,
+                varchar_add(row, ((char *) value), offset,
                             column_length_varchar(row->relation->schema->start, row->relation->schema->count,
                                                   name));
                 break;

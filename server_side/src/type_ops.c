@@ -30,7 +30,7 @@ bool double_compare(char* row_ptr, void* value, uint32_t offset) {
 
 bool varchar_compare(char* row_ptr, void* value, uint32_t offset, uint16_t column_size) {
     char* comparing = (char*) (row_ptr + offset);
-    char* expecting = *((char**) value);
+    char* expecting = ((char*) value);
     if (strcmp(comparing, expecting) == 0) {
         return true;
     }
