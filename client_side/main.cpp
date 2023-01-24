@@ -11,7 +11,14 @@
 #include "parser.tab.h"
 #include "include/string_utils_xml.h"
 
-int main() {
+int main(int argc, char* argv[]) {
+
+    if (argc < 1) {
+        std::cout << "You must enter server port" << std::endl;
+        return -1;
+    }
+
+    int port = atoi(argv[0]);
 
     ast_node* this_root;
 
@@ -21,7 +28,7 @@ int main() {
 
     sockaddr_in addr{};
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(9030);
+    addr.sin_port = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
     if (connect(sock, reinterpret_cast<sockaddr*>(&addr), sizeof (addr)) < 0) {

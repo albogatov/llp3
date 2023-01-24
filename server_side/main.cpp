@@ -68,7 +68,7 @@ awaitable<void> accept_new_client(tcp::socket socket, database* db) {
 
 awaitable<void> listener(database* db, char* port) {
 
-    int port_num = atoi( port );
+    unsigned short port_num = atoi( port );
     auto executor = co_await this_coro::executor;
     tcp::acceptor acceptor(executor, {tcp::v4(), port_num});
 
