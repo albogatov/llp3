@@ -66,6 +66,7 @@ namespace receiver {
 
             auto cmp = list.get<std::string>("compare_by");
             auto value = list.get<std::string>("right_operand");
+            value.erase(std::remove(value.begin(), value.end(), '\n'), value.cend());
             void* value_v = &value;
             std::string value_c = value;
             int help_int1;
@@ -80,7 +81,8 @@ namespace receiver {
                 value_v = &help_int1;
             } else if (as_type == "string") {
                 as_type = VARCHAR;
-                value_v = &value;
+                value_v = value.data();
+//                value_v = &value;
             } else if (as_type == "bool") {
                 as_type = BOOLEAN;
                 help_bool1 = list.get<bool>("right_operand");
@@ -148,7 +150,7 @@ namespace receiver {
                                                         break;
                                                     case VARCHAR:
                                                         help_string = u.second.get<std::string>("");
-                                                        val = &help_string;
+                                                        val = help_string.data();
                                                         break;
                                                     case DOUBLE:
                                                         help_double = u.second.get<double>("");
