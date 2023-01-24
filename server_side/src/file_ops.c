@@ -318,8 +318,8 @@ void update_query(char *begin, void *value, struct query_params *query, struct r
 
     fwrite(begin, relation->schema->length, 1, relation->relation_header->database->source_file);
 
-    if (show_output)
-        data_output(begin, relation->schema->start, relation->schema->count, NULL);
+//    if (show_output)
+//        data_output(begin, relation->schema->start, relation->schema->count, buf);
 }
 
 char * select_execute(FILE *file, struct relation *relation, uint32_t offset, uint16_t column_size, void *value,

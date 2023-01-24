@@ -180,28 +180,28 @@ namespace receiver {
             auto value = list.get<std::string>("right_operand");
             void* value_v = &value;
             std::string value_c = value;
-            int help_int;
+            int help_int1;
             std::string help_string;
-            bool help_bool;
-            double help_double;
+            bool help_bool1;
+            double help_double1;
             void* query_vals[2];
             content_type as_type = VARCHAR;
             auto this_type = list.get<std::string>("right_operand.<xmlattr>.type");
             if (this_type == "number") {
                 as_type = INTEGER;
-                help_int = list.get<int>("right_operand");
-                value_v = &help_int;
+                help_int1 = list.get<int>("right_operand");
+                value_v = &help_int1;
             } else if (this_type == "string") {
                 as_type = VARCHAR;
                 value_v = &value;
             } else if (this_type == "bool") {
                 as_type = BOOLEAN;
-                help_bool = list.get<bool>("right_operand");
-                value_v = &help_bool;
+                help_bool1 = list.get<bool>("right_operand");
+                value_v = &help_bool1;
             } else if (this_type == "float") {
                 as_type = DOUBLE;
-                help_double = list.get<double>("right_operand");
-                value_v = &help_double;
+                help_double1 = list.get<double>("right_operand");
+                value_v = &help_double1;
             }
 
 
@@ -214,6 +214,9 @@ namespace receiver {
                             std::string str;
                             std::string tp;
                             void* val;
+                            int help_int;
+                            bool help_bool;
+                            double help_double;
 
                             BOOST_FOREACH(const auto &u, v.second) {
                                             auto this_tp = u.second.get<std::string>("<xmlattr>.type");
@@ -246,12 +249,13 @@ namespace receiver {
                         }
             std::reverse(values.begin(), values.end());
 
-            query_vals[1] = values[0].second;
+            query_vals[1] = values[1].second;
+            void* cmp_vals[2] = {value_v, values[1].second};
             char* columns_vals[2] = { column.data() ,  values[0].first.data() };
 
             char* res1 = init_buf.data();
             relation* relation = relation_get(name.c_str(), db);
-            query* select_query = query_make(UPDATE, relation, columns_vals, query_vals, -1);
+            query* select_query = query_make(UPDATE, relation, columns_vals, cmp_vals, -1);
             res1 = query_execute(select_query, true, res1);
             if (res1) {
                 std::string res(res1);
